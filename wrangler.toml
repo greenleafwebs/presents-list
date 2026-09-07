@@ -2,6 +2,9 @@ name = "presents-list"
 main = "index.js"
 compatibility_date = "2026-09-07"
 
+[assets]
+directory = "."
+
 [[d1_databases]]
 binding = "DB"
 database_name = "presents-list-db"
