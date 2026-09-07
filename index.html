@@ -13,8 +13,8 @@
 
     body {
       margin: 0;
-      padding: 20px;
-      background: #f5f5f5;
+      padding: 24px 16px;
+      background: #f3f5f7;
       color: #333;
       font-family:
         -apple-system,
@@ -25,66 +25,93 @@
     }
 
     .container {
-      max-width: 800px;
+      max-width: 760px;
       margin: 0 auto;
     }
 
     .post {
       background: #fff;
-      border-radius: 10px;
-      padding: 18px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
     }
 
     .post-text {
       word-break: break-word;
-      line-height: 1.8;
       font-size: 15px;
+      line-height: 1.8;
     }
 
+    /* 各リンク */
     .post-link {
+      display: block;
       color: #1677c8;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
+      padding: 4px 0;
     }
 
     .post-link:hover {
       text-decoration: underline;
     }
 
+    /* 最初のリンク＝懸賞情報のタイトル */
+    .post-link:first-child {
+      font-size: 18px;
+      color: #222;
+      margin-bottom: 12px;
+    }
+
+    /* プレゼント項目 */
+    .post-link:not(:first-child) {
+      margin-top: 8px;
+    }
+
     .x-button {
       display: inline-block;
-      margin-top: 16px;
-      padding: 8px 16px;
+      margin-top: 20px;
+      padding: 9px 18px;
       background: #000;
       color: #fff;
       text-decoration: none;
-      border-radius: 20px;
+      border-radius: 22px;
       font-size: 14px;
+      font-weight: 600;
+      transition: opacity 0.2s;
     }
 
     .x-button:hover {
-      opacity: 0.8;
+      opacity: 0.75;
     }
 
     .message {
       text-align: center;
-      padding: 40px 10px;
+      padding: 50px 10px;
       color: #777;
     }
 
     @media (max-width: 600px) {
       body {
-        padding: 10px;
+        padding: 12px 10px;
       }
 
       .post {
-        padding: 14px;
+        padding: 17px;
+        margin-bottom: 14px;
       }
 
       .post-text {
         font-size: 14px;
+        line-height: 1.75;
+      }
+
+      .post-link:first-child {
+        font-size: 17px;
+      }
+
+      .x-button {
+        margin-top: 17px;
       }
     }
   </style>
@@ -130,6 +157,7 @@
           const lines = post.text.split("\n");
 
           let html = "";
+          let linkCount = 0;
 
           for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
@@ -150,8 +178,10 @@
               const safeText = escapeHtml(line);
               const safeUrl = escapeHtml(nextLine);
 
+              linkCount++;
+
               html +=
-                `<a class="post-link" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeText}</a><br>`;
+                `<a class="post-link link-${linkCount}" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeText}</a>`;
 
               i++;
               continue;
