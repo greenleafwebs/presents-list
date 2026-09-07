@@ -38,10 +38,18 @@
     }
 
     .post-text {
-      white-space: pre-wrap;
       word-break: break-word;
-      line-height: 1.7;
+      line-height: 1.8;
       font-size: 15px;
+    }
+
+    .post-text a {
+      color: #1677c8;
+      text-decoration: none;
+    }
+
+    .post-text a:hover {
+      text-decoration: underline;
     }
 
     .x-button {
@@ -117,23 +125,21 @@
           const text = document.createElement("div");
           text.className = "post-text";
 
-          // 重複しているタイトル部分を削除
-          let displayText = post.text;
+          // Markdown形式のリンク
+          // [文字](URL)
+          // をHTMLのリンクに変換
+          let html = post.text
+            .replace(
+              /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,
+              '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+            );
 
-          const lines = displayText.split("\n");
+          // 改行をHTMLの改行に変換
+          html = html.replace(/\n/g, "<br>");
 
-          if (lines.length > 1) {
-            const firstLine = lines[0].trim();
-            const rest = lines.slice(1).join("\n").trim();
+          text.innerHTML = html;
 
-            // 1行目が本文の先頭にも含まれている場合は削除
-            if (rest.startsWith(firstLine)) {
-              displayText = rest;
-            }
-          }
-
-          text.textContent = displayText;
-
+          // Xで見るボタン
           const button = document.createElement("a");
           button.className = "x-button";
           button.href = post.post_url;
