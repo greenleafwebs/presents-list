@@ -61,13 +61,13 @@ async function run(env) {
 
     if (!matched) continue;
 
-    // 一致した記事を保存
+    // 本文だけを保存
     await env.DB
       .prepare(
         `INSERT OR IGNORE INTO posts (post_url, text)
          VALUES (?, ?)`
       )
-      .bind(postUrl, `${title}\n${description}`)
+      .bind(postUrl, description)
       .run();
 
     savedCount++;
@@ -116,7 +116,7 @@ export default {
         );
       }
 
-      // 今までの手動実行
+      // 手動実行
       const result = await run(env);
 
       return new Response(
