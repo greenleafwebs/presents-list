@@ -82,9 +82,41 @@ async function run(env) {
 }
 
 export default {
-  // 通常アクセスした場合
+  // 通常アクセス
   async fetch(request, env) {
     try {
+      const url = new URL(request.url);
+
+      // 保存済み投稿一覧API
+      if (url.pathname === "/api/posts") {
+        const { results } = await env.DB
+          .prepare(
+            `SELECT post_url, text
+             FROM posts
+             ORDER BY rowid DESC
+             LIMIT 100`
+          )
+          .all();
+
+        return new Response(
+          JSON.stringify(
+            {
+              success: true,
+              posts: results
+            },
+            null,
+            2
+          ),
+          {
+            headers: {
+              "Content-Type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*"
+            }
+          }
+        );
+      }
+
+      // 今までの手動実行
       const result = await run(env);
 
       return new Response(
@@ -95,6 +127,7 @@ export default {
           }
         }
       );
+
     } catch (error) {
       return new Response(
         JSON.stringify(
