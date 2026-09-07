@@ -116,7 +116,23 @@
 
           const text = document.createElement("div");
           text.className = "post-text";
-          text.textContent = post.text;
+
+          // 重複しているタイトル部分を削除
+          let displayText = post.text;
+
+          const lines = displayText.split("\n");
+
+          if (lines.length > 1) {
+            const firstLine = lines[0].trim();
+            const rest = lines.slice(1).join("\n").trim();
+
+            // 1行目が本文の先頭にも含まれている場合は削除
+            if (rest.startsWith(firstLine)) {
+              displayText = rest;
+            }
+          }
+
+          text.textContent = displayText;
 
           const button = document.createElement("a");
           button.className = "x-button";
