@@ -1,0 +1,8 @@
+name = "presents-list"
+main = "index.js"
+compatibility_date = "2026-09-07"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "presents-list-db"
+database_id = "0df4b26e-3aa9-4cc0-86bb-f1ac86c457f9"
