@@ -40,7 +40,7 @@
     .post-text {
       word-break: break-word;
       font-size: 15px;
-      line-height: 1.8;
+      line-height: 1.6;
     }
 
     /* 各リンク */
@@ -49,7 +49,7 @@
       color: #1677c8;
       text-decoration: none;
       font-weight: 600;
-      padding: 4px 0;
+      padding: 2px 0;
     }
 
     .post-link:hover {
@@ -60,17 +60,22 @@
     .post-link:first-child {
       font-size: 18px;
       color: #222;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     /* プレゼント項目 */
     .post-link:not(:first-child) {
-      margin-top: 8px;
+      margin-top: 6px;
+    }
+
+    /* 空行の間隔 */
+    .space {
+      height: 10px;
     }
 
     .x-button {
       display: inline-block;
-      margin-top: 20px;
+      margin-top: 16px;
       padding: 9px 18px;
       background: #000;
       color: #fff;
@@ -103,7 +108,7 @@
 
       .post-text {
         font-size: 14px;
-        line-height: 1.75;
+        line-height: 1.6;
       }
 
       .post-link:first-child {
@@ -111,7 +116,7 @@
       }
 
       .x-button {
-        margin-top: 17px;
+        margin-top: 15px;
       }
     }
   </style>
@@ -164,7 +169,7 @@
 
             // 空行
             if (!line) {
-              html += "<br>";
+              html += '<div class="space"></div>';
               continue;
             }
 
