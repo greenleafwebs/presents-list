@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>プレゼント情報</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+      color: #333;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Noto Sans JP",
+        sans-serif;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .post {
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .post-text {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .x-button {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 8px 16px;
+      background: #000;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 20px;
+      font-size: 14px;
+    }
+
+    .x-button:hover {
+      opacity: 0.8;
+    }
+
+    .message {
+      text-align: center;
+      padding: 40px 10px;
+      color: #777;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .post {
+        padding: 14px;
+      }
+
+      .post-text {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container" id="posts">
+    <div class="message">読み込み中……</div>
+  </div>
+
+  <script>
+    const API_URL = "/api/posts";
+
+    async function loadPosts() {
+      const container = document.getElementById("posts");
+
+      try {
+        const response = await fetch(API_URL);
+
+        if (!response.ok) {
+          throw new Error("データ取得に失敗しました");
+        }
+
+        const data = await response.json();
+
+        container.innerHTML = "";
+
+        if (!data.posts || data.posts.length === 0) {
+          container.innerHTML =
+            '<div class="message">現在、該当する投稿はありません。</div>';
+          return;
+        }
+
+        data.posts.forEach(post => {
+          const article = document.createElement("article");
+          article.className = "post";
+
+          const text = document.createElement("div");
+          text.className = "post-text";
+          text.textContent = post.text;
+
+          const button = document.createElement("a");
+          button.className = "x-button";
+          button.href = post.post_url;
+          button.target = "_blank";
+          button.rel = "noopener noreferrer";
+          button.textContent = "Xで見る";
+
+          article.appendChild(text);
+          article.appendChild(button);
+
+          container.appendChild(article);
+        });
+
+      } catch (error) {
+        console.error(error);
+
+        container.innerHTML =
+          '<div class="message">投稿の読み込みに失敗しました。</div>';
+      }
+    }
+
+    loadPosts();
+  </script>
+
+</body>
+</html>
