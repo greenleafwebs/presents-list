@@ -52,8 +52,6 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     }
 
-    /* 投稿タイトル */
-
     .post-title {
       display: block;
       margin: 0 0 10px;
@@ -68,22 +66,11 @@
       text-decoration: underline;
     }
 
-    /* 投稿本文 */
-
     .post-text {
       line-height: 1.7;
       white-space: pre-wrap;
       word-break: break-word;
       font-size: 15px;
-    }
-
-    .post-text a {
-      color: #1677cc;
-      text-decoration: none;
-    }
-
-    .post-text a:hover {
-      text-decoration: underline;
     }
 
     .keyword {
@@ -251,13 +238,22 @@
       font-size: 11px;
     }
 
+    /* ==========================================
+       管理者ログイン
+       ========================================== */
+
     .admin-login {
       display: none;
-      margin-top: 20px;
+      margin-bottom: 15px;
       background: #fff;
       border-radius: 10px;
       padding: 16px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .admin-login h2 {
+      margin: 0 0 12px;
+      font-size: 19px;
     }
 
     .admin-login input {
@@ -265,8 +261,8 @@
       padding: 11px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      font-size: 15px;
-      margin-bottom: 10px;
+      font-size: 16px;
+      margin-bottom: 8px;
     }
 
     .login-button {
@@ -280,6 +276,10 @@
       cursor: pointer;
     }
 
+    .login-button:hover {
+      background: #333;
+    }
+
     .login-error {
       margin-top: 10px;
       color: #d9534f;
@@ -290,6 +290,11 @@
     .logout-button {
       background: #777;
       color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 12px;
+      cursor: pointer;
+      margin-bottom: 15px;
     }
   </style>
 
@@ -302,47 +307,41 @@
   <h1>🎁 プレゼント情報一覧</h1>
 
   <!-- ==========================================
-       管理画面
+       管理者ログイン
        ========================================== -->
 
-  <div id="admin-login" style="display:none; margin-bottom:15px; background:#fff; border-radius:10px; padding:16px; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
-    <h2 style="margin:0 0 12px; font-size:19px;">🔐 管理者ログイン</h2>
-    <input
-      type="password"
-      id="adminPassword"
-      placeholder="管理用パスワード"
-      autocomplete="current-password"
-      style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-size:16px; margin-bottom:8px;"
-    >
-    <button
-      type="button"
-      class="add-button"
-      onclick="loginAdmin()"
-      style="margin:0;"
-    >
-      ログイン
-    </button>
-    <div id="loginResult" style="margin-top:8px; font-size:13px;"></div>
+  <div id="adminLogin" class="admin-login">
+
+```
+<h2>🔐 管理者ログイン</h2>
+
+<input
+  type="password"
+  id="adminPassword"
+  placeholder="管理用パスワード"
+  autocomplete="current-password"
+  onkeydown="if(event.key === 'Enter') loginAdmin()"
+>
+
+<button
+  type="button"
+  class="login-button"
+  onclick="loginAdmin()"
+>
+  ログイン
+</button>
+
+<div
+  id="loginError"
+  class="login-error"
+></div>
+```
+
   </div>
 
-  <div id="adminLogin" class="admin-login">
-    <h2 style="margin:0 0 12px; font-size:19px;">🔐 管理者ログイン</h2>
-    <input
-      type="password"
-      id="adminPassword"
-      placeholder="管理用パスワード"
-      autocomplete="current-password"
-      onkeydown="if(event.key === 'Enter') loginAdmin()"
-    >
-    <button
-      type="button"
-      class="login-button"
-      onclick="loginAdmin()"
-    >
-      ログイン
-    </button>
-    <div id="loginError" class="login-error"></div>
-  </div>
+  <!-- ==========================================
+       管理画面
+       ========================================== -->
 
   <div id="admin">
 
@@ -355,7 +354,9 @@
   🔒 ログアウト
 </button>
 
+
 <!-- RSS手動取得 -->
+
 <div class="admin-section">
 
   <h2>🔄 RSS取得</h2>
@@ -378,6 +379,7 @@
 
 
 <!-- キーワード管理 -->
+
 <div class="admin-section">
 
   <h2>🔑 キーワード管理</h2>
@@ -391,15 +393,18 @@
   </button>
 
   <div id="keywords">
+
     <div class="message">
       読み込み中……
     </div>
+
   </div>
 
 </div>
 
 
 <!-- アカウント管理 -->
+
 <div class="admin-section">
 
   <h2>👤 アカウント管理</h2>
@@ -413,9 +418,11 @@
   </button>
 
   <div id="accounts">
+
     <div class="message">
       読み込み中……
     </div>
+
   </div>
 
 </div>
@@ -502,45 +509,58 @@ async function loadPosts() {
           return `
             <div class="post">
 
-              ${formatted.titleUrl
-                ? `
-                  <a
-                    class="post-title"
-                    href="${formatted.titleUrl}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    ${highlightKeywords(
-                      formatted.title,
-                      keywords
-                    )}
-                  </a>
-                `
-                : `
-                  <div class="post-title">
-                    ${highlightKeywords(
-                      formatted.title,
-                      keywords
-                    )}
-                  </div>
-                `
+              ${
+                formatted.titleUrl
+                  ? `
+                    <a
+                      class="post-title"
+                      href="${escapeHtml(formatted.titleUrl)}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      ${highlightKeywords(
+                        formatted.title,
+                        keywords
+                      )}
+                    </a>
+                  `
+                  : `
+                    <div class="post-title">
+                      ${highlightKeywords(
+                        formatted.title,
+                        keywords
+                      )}
+                    </div>
+                  `
               }
 
-              <div class="post-text">
-                ${highlightKeywords(
-                  formatted.body,
-                  keywords
-                )}
-              </div>
+              ${
+                formatted.body
+                  ? `
+                    <div class="post-text">
+                      ${highlightKeywords(
+                        formatted.body,
+                        keywords
+                      )}
+                    </div>
+                  `
+                  : ""
+              }
 
-              <a
-                class="post-x"
-                href="${escapeHtml(post.post_url)}"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Xで見る
-              </a>
+              ${
+                post.post_url
+                  ? `
+                    <a
+                      class="post-x"
+                      href="${escapeHtml(post.post_url)}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Xで見る
+                    </a>
+                  `
+                  : ""
+              }
 
             </div>
           `;
@@ -566,26 +586,111 @@ async function loadPosts() {
 
 function formatPostText(text) {
 
-  const lines =
-    text.split(/\r?\n/);
+  let lines =
+    String(text)
+      .split(/\r?\n/);
 
-  let title =
-    lines.length > 0
-      ? lines[0].trim()
-      : "";
-
+  let title = "";
   let titleUrl = "";
-
   const bodyLines = [];
 
-  for (let i = 1; i < lines.length; i++) {
 
-    const line =
-      lines[i].trim();
+  /*
+   * ------------------------------------------
+   * 1行目からタイトルとURLを取得
+   *
+   * 対応形式：
+   *
+   * 9/6締切 懸賞人気順254件
+   * https://kns.how/Jjs3JG
+   *
+   * または
+   *
+   * [**9/6締切 懸賞人気順254件**](https://kns.how/Jjs3JG)
+   * ------------------------------------------
+   */
+
+  if (lines.length > 0) {
+
+    const firstLine =
+      lines[0].trim();
+
+    const markdownMatch =
+      firstLine.match(
+        /^\[\s*\*{0,2}(.*?)\*{0,2}\s*\]\((https?:\/\/kns\.how\/\S+)\)$/i
+      );
+
+    if (markdownMatch) {
+
+      title =
+        markdownMatch[1]
+          .trim()
+          .replace(/^\*+|\*+$/g, "")
+          .trim();
+
+      titleUrl =
+        markdownMatch[2]
+          .trim();
+
+      lines.shift();
+
+    } else {
+
+      title =
+        firstLine
+          .replace(/^\*+|\*+$/g, "")
+          .trim();
+
+      lines.shift();
+
+    }
+
+  }
+
+
+  /*
+   * ------------------------------------------
+   * 本文からURL・不要な記号・余白を除去
+   * ------------------------------------------
+   */
+
+  for (const originalLine of lines) {
+
+    let line =
+      originalLine.trim();
+
 
     /*
-     * kns.how のURLを取得する
-     * URLそのものは画面には表示しない
+     * 空行はそのままスキップ
+     */
+
+    if (!line) {
+      continue;
+    }
+
+
+    /*
+     * 単独のバッククォート・コードフェンスを削除
+     *
+     * `
+     * ```
+     *
+     * など
+     */
+
+    if (
+      line === "`" ||
+      line === "```"
+    ) {
+      continue;
+    }
+
+
+    /*
+     * kns.how のURL単体行
+     *
+     * URLは画面に表示しない。
+     * タイトルURLがまだ無ければ取得する。
      */
 
     const urlMatch =
@@ -603,34 +708,62 @@ function formatPostText(text) {
       continue;
     }
 
+
     /*
-     * 本文中にURLが含まれている場合も
-     * kns.how のURL部分だけ削除する
+     * 本文中に kns.how URL が含まれている場合も削除
      */
 
-    const withoutKnsUrl =
+    line =
       line.replace(
         /https?:\/\/kns\.how\/\S+/gi,
         ""
       ).trim();
 
-    if (withoutKnsUrl) {
+
+    /*
+     * Markdownリンクが本文に残っている場合、
+     * kns.how URLだけ削除して文字だけ残す
+     */
+
+    line =
+      line.replace(
+        /\[\s*\*{0,2}(.*?)\*{0,2}\s*\]\(\s*https?:\/\/kns\.how\/\S+\s*\)/gi,
+        "$1"
+      ).trim();
+
+
+    /*
+     * 本文の先頭・末尾に残っている
+     * バッククォートを除去
+     */
+
+    line =
+      line.replace(
+        /^`+|`+$/g,
+        ""
+      ).trim();
+
+
+    if (line) {
       bodyLines.push(
-        escapeHtml(withoutKnsUrl)
+        escapeHtml(line)
       );
     }
 
   }
 
+
   return {
+
     title:
       escapeHtml(title),
 
     titleUrl:
-      escapeHtml(titleUrl),
+      titleUrl,
 
     body:
       bodyLines.join("<br>")
+
   };
 }
 
@@ -672,12 +805,14 @@ async function getKeywordList() {
 
 function highlightKeywords(text, keywords) {
 
-  let result = text;
+  let result =
+    text;
 
   const sortedKeywords =
     [...keywords]
-      .sort((a, b) =>
-        b.length - a.length
+      .sort(
+        (a, b) =>
+          b.length - a.length
       );
 
   for (const keyword of sortedKeywords) {
@@ -709,11 +844,26 @@ function highlightKeywords(text, keywords) {
 function escapeHtml(value) {
 
   return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 }
 
 
@@ -736,29 +886,41 @@ function escapeRegExp(value) {
    ========================================== */
 
 function getAdminPassword() {
-  return sessionStorage.getItem("adminPassword") || "";
+
+  return (
+    sessionStorage.getItem(
+      "adminPassword"
+    ) || ""
+  );
 }
+
 
 function adminHeaders(json = false) {
 
   const headers = {
-    "X-Admin-Password": getAdminPassword()
+    "X-Admin-Password":
+      getAdminPassword()
   };
 
   if (json) {
+
     headers["Content-Type"] =
       "application/json";
+
   }
 
   return headers;
 }
+
 
 async function checkAdmin() {
 
   const password =
     getAdminPassword();
 
-  if (!password) return false;
+  if (!password) {
+    return false;
+  }
 
   try {
 
@@ -783,6 +945,7 @@ async function checkAdmin() {
   }
 }
 
+
 async function loginAdmin() {
 
   const input =
@@ -796,7 +959,8 @@ async function loginAdmin() {
     );
 
   const password =
-    input.value;
+    input.value.trim();
+
 
   if (!password) {
 
@@ -809,16 +973,20 @@ async function loginAdmin() {
     return;
   }
 
+
   errorBox.style.display =
     "none";
+
 
   sessionStorage.setItem(
     "adminPassword",
     password
   );
 
+
   const ok =
     await checkAdmin();
+
 
   if (!ok) {
 
@@ -833,15 +1001,18 @@ async function loginAdmin() {
       "block";
 
     input.value = "";
+
     input.focus();
 
     return;
   }
 
+
   input.value = "";
 
-  showAdmin();
+  await showAdmin();
 }
+
 
 function logoutAdmin() {
 
@@ -851,11 +1022,13 @@ function logoutAdmin() {
 
   document.getElementById(
     "admin"
-  ).style.display = "none";
+  ).style.display =
+    "none";
 
   document.getElementById(
     "adminLogin"
-  ).style.display = "none";
+  ).style.display =
+    "none";
 
   document.querySelector(
     ".admin-toggle"
@@ -863,15 +1036,18 @@ function logoutAdmin() {
     "⚙️ 管理";
 }
 
+
 async function showAdmin() {
 
   document.getElementById(
     "adminLogin"
-  ).style.display = "none";
+  ).style.display =
+    "none";
 
   document.getElementById(
     "admin"
-  ).style.display = "block";
+  ).style.display =
+    "block";
 
   document.querySelector(
     ".admin-toggle"
@@ -879,8 +1055,10 @@ async function showAdmin() {
     "⚙️ 管理を閉じる";
 
   await loadKeywords();
+
   await loadAccounts();
 }
+
 
 async function toggleAdmin() {
 
@@ -893,6 +1071,7 @@ async function toggleAdmin() {
     document.getElementById(
       "adminLogin"
     );
+
 
   if (
     admin.style.display ===
@@ -910,28 +1089,37 @@ async function toggleAdmin() {
     return;
   }
 
+
   if (await checkAdmin()) {
 
-    showAdmin();
+    await showAdmin();
 
     return;
   }
+
 
   sessionStorage.removeItem(
     "adminPassword"
   );
 
+
   login.style.display =
     "block";
 
-  document.getElementById(
-    "adminPassword"
-  ).focus();
+
+  const input =
+    document.getElementById(
+      "adminPassword"
+    );
+
+  input.value = "";
+
+  input.focus();
 }
 
 
 /* ==========================================
-   🔄 RSS手動取得
+   RSS手動取得
    ========================================== */
 
 async function runRss() {
@@ -946,16 +1134,20 @@ async function runRss() {
       "runResult"
     );
 
-  button.disabled = true;
+
+  button.disabled =
+    true;
 
   button.textContent =
     "⏳ 取得中……";
+
 
   resultBox.style.display =
     "block";
 
   resultBox.textContent =
     "RSSを取得しています……";
+
 
   try {
 
@@ -964,12 +1156,15 @@ async function runRss() {
         "/api/run",
         {
           method: "POST",
-          headers: adminHeaders()
+          headers:
+            adminHeaders()
         }
       );
 
+
     const data =
       await response.json();
+
 
     if (!data.success) {
 
@@ -979,6 +1174,7 @@ async function runRss() {
       );
     }
 
+
     resultBox.innerHTML = `
       <strong>取得完了！</strong><br>
       アカウント：${data.accounts}件<br>
@@ -987,7 +1183,9 @@ async function runRss() {
       新規保存：${data.saved}件
     `;
 
+
     await loadPosts();
+
 
   } catch (error) {
 
@@ -998,9 +1196,11 @@ async function runRss() {
       ${escapeHtml(error.message)}
     `;
 
+
   } finally {
 
-    button.disabled = false;
+    button.disabled =
+      false;
 
     button.textContent =
       "🔄 今すぐ取得";
@@ -1019,6 +1219,7 @@ async function loadKeywords() {
       "keywords"
     );
 
+
   try {
 
     const response =
@@ -1030,16 +1231,20 @@ async function loadKeywords() {
         }
       );
 
+
     const data =
       await response.json();
+
 
     if (!data.success) {
       throw new Error();
     }
 
+
     renderKeywords(
       data.keywords
     );
+
 
   } catch (error) {
 
@@ -1062,6 +1267,7 @@ function renderKeywords(keywords) {
       "keywords"
     );
 
+
   if (
     !keywords ||
     keywords.length === 0
@@ -1072,6 +1278,7 @@ function renderKeywords(keywords) {
 
     return;
   }
+
 
   container.innerHTML =
     keywords
@@ -1115,9 +1322,11 @@ async function addKeyword() {
       "追加するキーワードを入力してください"
     );
 
+
   if (!keyword) {
     return;
   }
+
 
   try {
 
@@ -1136,8 +1345,10 @@ async function addKeyword() {
         }
       );
 
+
     const data =
       await response.json();
+
 
     if (!data.success) {
 
@@ -1149,7 +1360,9 @@ async function addKeyword() {
       return;
     }
 
+
     await loadKeywords();
+
 
   } catch (error) {
 
@@ -1168,42 +1381,48 @@ async function addKeyword() {
 
 async function editKeyword(id) {
 
-  const currentKeywords =
-    await fetch(
-      "/api/keywords"
-    )
-      .then(response =>
-        response.json()
-      );
-
-  const item =
-    currentKeywords.keywords
-      .find(
-        k => k.id === id
-      );
-
-  if (!item) {
-
-    alert(
-      "キーワードが見つかりません"
-    );
-
-    return;
-  }
-
-  const keyword =
-    prompt(
-      "新しいキーワードを入力してください",
-      item.keyword
-    );
-
-  if (!keyword) {
-    return;
-  }
-
   try {
 
     const response =
+      await fetch(
+        "/api/keywords"
+      );
+
+
+    const data =
+      await response.json();
+
+
+    const item =
+      data.keywords
+        .find(
+          k => k.id === id
+        );
+
+
+    if (!item) {
+
+      alert(
+        "キーワードが見つかりません"
+      );
+
+      return;
+    }
+
+
+    const keyword =
+      prompt(
+        "新しいキーワードを入力してください",
+        item.keyword
+      );
+
+
+    if (!keyword) {
+      return;
+    }
+
+
+    const updateResponse =
       await fetch(
         `/api/keywords/${id}`,
         {
@@ -1218,21 +1437,26 @@ async function editKeyword(id) {
         }
       );
 
-    const data =
-      await response.json();
 
-    if (!data.success) {
+    const result =
+      await updateResponse.json();
+
+
+    if (!result.success) {
 
       alert(
-        data.error ||
+        result.error ||
         "変更に失敗しました"
       );
 
       return;
     }
 
+
     await loadKeywords();
+
     await loadPosts();
+
 
   } catch (error) {
 
@@ -1259,6 +1483,7 @@ async function deleteKeyword(id) {
     return;
   }
 
+
   try {
 
     const response =
@@ -1271,8 +1496,10 @@ async function deleteKeyword(id) {
         }
       );
 
+
     const data =
       await response.json();
+
 
     if (!data.success) {
 
@@ -1284,8 +1511,11 @@ async function deleteKeyword(id) {
       return;
     }
 
+
     await loadKeywords();
+
     await loadPosts();
+
 
   } catch (error) {
 
@@ -1309,6 +1539,7 @@ async function loadAccounts() {
       "accounts"
     );
 
+
   try {
 
     const response =
@@ -1320,16 +1551,20 @@ async function loadAccounts() {
         }
       );
 
+
     const data =
       await response.json();
+
 
     if (!data.success) {
       throw new Error();
     }
 
+
     renderAccounts(
       data.accounts
     );
+
 
   } catch (error) {
 
@@ -1352,6 +1587,7 @@ function renderAccounts(accounts) {
       "accounts"
     );
 
+
   if (
     !accounts ||
     accounts.length === 0
@@ -1363,6 +1599,7 @@ function renderAccounts(accounts) {
     return;
   }
 
+
   container.innerHTML =
     accounts
       .map(account => {
@@ -1371,6 +1608,7 @@ function renderAccounts(accounts) {
           account.enabled
             ? '<span class="enabled">有効</span>'
             : '<span class="disabled">無効</span>';
+
 
         return `
           <div class="account-item">
@@ -1435,9 +1673,11 @@ async function addAccount() {
       "ユーザー名を入力してください"
     );
 
+
   if (!username) {
     return;
   }
+
 
   const xUrl =
     prompt(
@@ -1445,18 +1685,22 @@ async function addAccount() {
       `https://x.com/${username.trim()}`
     );
 
+
   if (xUrl === null) {
     return;
   }
+
 
   const rssUrl =
     prompt(
       "RSS URLを入力してください"
     );
 
+
   if (rssUrl === null) {
     return;
   }
+
 
   try {
 
@@ -1479,14 +1723,17 @@ async function addAccount() {
               rss_url:
                 rssUrl.trim(),
 
-              enabled: 1
+              enabled:
+                1
 
             })
         }
       );
 
+
     const data =
       await response.json();
+
 
     if (!data.success) {
 
@@ -1498,7 +1745,9 @@ async function addAccount() {
       return;
     }
 
+
     await loadAccounts();
+
 
   } catch (error) {
 
@@ -1528,14 +1777,17 @@ async function editAccount(id) {
         }
       );
 
+
     const data =
       await response.json();
+
 
     const account =
       data.accounts
         .find(
           a => a.id === id
         );
+
 
     if (!account) {
 
@@ -1546,15 +1798,18 @@ async function editAccount(id) {
       return;
     }
 
+
     const username =
       prompt(
         "ユーザー名",
         account.username
       );
 
+
     if (username === null) {
       return;
     }
+
 
     const xUrl =
       prompt(
@@ -1562,9 +1817,11 @@ async function editAccount(id) {
         account.x_url || ""
       );
 
+
     if (xUrl === null) {
       return;
     }
+
 
     const rssUrl =
       prompt(
@@ -1572,14 +1829,17 @@ async function editAccount(id) {
         account.rss_url || ""
       );
 
+
     if (rssUrl === null) {
       return;
     }
+
 
     const enabled =
       confirm(
         "このアカウントを有効にしますか？\n\nOK：有効\nキャンセル：無効"
       );
+
 
     const updateResponse =
       await fetch(
@@ -1607,8 +1867,10 @@ async function editAccount(id) {
         }
       );
 
+
     const result =
       await updateResponse.json();
+
 
     if (!result.success) {
 
@@ -1620,7 +1882,9 @@ async function editAccount(id) {
       return;
     }
 
+
     await loadAccounts();
+
 
   } catch (error) {
 
@@ -1647,6 +1911,7 @@ async function deleteAccount(id) {
     return;
   }
 
+
   try {
 
     const response =
@@ -1659,8 +1924,10 @@ async function deleteAccount(id) {
         }
       );
 
+
     const data =
       await response.json();
+
 
     if (!data.success) {
 
@@ -1672,7 +1939,9 @@ async function deleteAccount(id) {
       return;
     }
 
+
     await loadAccounts();
+
 
   } catch (error) {
 
@@ -1690,8 +1959,6 @@ async function deleteAccount(id) {
    ========================================== */
 
 async function init() {
-
-  await loadKeywords();
 
   await loadPosts();
 }
