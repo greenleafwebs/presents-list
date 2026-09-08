@@ -230,6 +230,47 @@
       color: #fff;
       font-size: 11px;
     }
+
+    .admin-login {
+      display: none;
+      margin-top: 20px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .admin-login input {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 11px;
+      border: none;
+      border-radius: 6px;
+      background: #444;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .login-error {
+      margin-top: 10px;
+      color: #d9534f;
+      font-size: 13px;
+      display: none;
+    }
+
+    .logout-button {
+      background: #777;
+      color: #fff;
+    }
   </style>
 </head>
 
@@ -244,7 +285,54 @@
        管理画面
        ========================================== -->
 
+  <div id="admin-login" style="display:none; margin-bottom:15px; background:#fff; border-radius:10px; padding:16px; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+    <h2 style="margin:0 0 12px; font-size:19px;">🔐 管理者ログイン</h2>
+    <input
+      type="password"
+      id="adminPassword"
+      placeholder="管理用パスワード"
+      autocomplete="current-password"
+      style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-size:16px; margin-bottom:8px;"
+    >
+    <button
+      type="button"
+      class="add-button"
+      onclick="loginAdmin()"
+      style="margin:0;"
+    >
+      ログイン
+    </button>
+    <div id="loginResult" style="margin-top:8px; font-size:13px;"></div>
+  </div>
+
+  <div id="adminLogin" class="admin-login">
+    <h2 style="margin:0 0 12px; font-size:19px;">🔐 管理者ログイン</h2>
+    <input
+      type="password"
+      id="adminPassword"
+      placeholder="管理用パスワード"
+      autocomplete="current-password"
+      onkeydown="if(event.key === 'Enter') loginAdmin()"
+    >
+    <button
+      type="button"
+      class="login-button"
+      onclick="loginAdmin()"
+    >
+      ログイン
+    </button>
+    <div id="loginError" class="login-error"></div>
+  </div>
+
   <div id="admin">
+
+    <button
+      type="button"
+      class="logout-button"
+      onclick="logoutAdmin()"
+    >
+      🔒 ログアウト
+    </button>
 
     <!-- RSS手動取得 -->
     <div class="admin-section">
@@ -550,36 +638,105 @@ function escapeRegExp(value) {
 
 
 /* ==========================================
-   管理画面開閉
+   管理者認証
    ========================================== */
 
-function toggleAdmin() {
+function getAdminPassword() {
+  return sessionStorage.getItem("adminPassword") || "";
+}
 
-  const admin =
-    document.getElementById("admin");
+function adminHeaders(json = false) {
+  const headers = {
+    "X-Admin-Password": getAdminPassword()
+  };
 
-  const button =
-    document.querySelector(".admin-toggle");
-
-  if (
-    admin.style.display === "block"
-  ) {
-
-    admin.style.display = "none";
-
-    button.textContent =
-      "⚙️ 管理";
-
-  } else {
-
-    admin.style.display = "block";
-
-    button.textContent =
-      "⚙️ 管理を閉じる";
-
-    loadKeywords();
-    loadAccounts();
+  if (json) {
+    headers["Content-Type"] = "application/json";
   }
+
+  return headers;
+}
+
+async function checkAdmin() {
+  const password = getAdminPassword();
+  if (!password) return false;
+
+  try {
+    const response = await fetch("/api/admin-check", {
+      headers: {
+        "X-Admin-Password": password
+      }
+    });
+
+    return response.ok;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
+async function loginAdmin() {
+  const input = document.getElementById("adminPassword");
+  const errorBox = document.getElementById("loginError");
+  const password = input.value;
+
+  if (!password) {
+    errorBox.textContent = "パスワードを入力してください。";
+    errorBox.style.display = "block";
+    return;
+  }
+
+  errorBox.style.display = "none";
+  sessionStorage.setItem("adminPassword", password);
+
+  const ok = await checkAdmin();
+
+  if (!ok) {
+    sessionStorage.removeItem("adminPassword");
+    errorBox.textContent = "パスワードが違います。";
+    errorBox.style.display = "block";
+    input.value = "";
+    input.focus();
+    return;
+  }
+
+  input.value = "";
+  showAdmin();
+}
+
+function logoutAdmin() {
+  sessionStorage.removeItem("adminPassword");
+  document.getElementById("admin").style.display = "none";
+  document.getElementById("adminLogin").style.display = "none";
+  document.querySelector(".admin-toggle").textContent = "⚙️ 管理";
+}
+
+async function showAdmin() {
+  document.getElementById("adminLogin").style.display = "none";
+  document.getElementById("admin").style.display = "block";
+  document.querySelector(".admin-toggle").textContent = "⚙️ 管理を閉じる";
+  await loadKeywords();
+  await loadAccounts();
+}
+
+async function toggleAdmin() {
+  const admin = document.getElementById("admin");
+  const login = document.getElementById("adminLogin");
+
+  if (admin.style.display === "block") {
+    admin.style.display = "none";
+    document.querySelector(".admin-toggle").textContent = "⚙️ 管理";
+    return;
+  }
+
+  if (await checkAdmin()) {
+    showAdmin();
+    return;
+  }
+
+  sessionStorage.removeItem("adminPassword");
+  login.style.display = "block";
+  document.getElementById("adminPassword").focus();
 }
 
 
@@ -612,7 +769,8 @@ async function runRss() {
       await fetch(
         "/api/run",
         {
-          method: "POST"
+          method: "POST",
+          headers: adminHeaders()
         }
       );
 
@@ -669,7 +827,9 @@ async function loadKeywords() {
   try {
 
     const response =
-      await fetch("/api/keywords");
+      await fetch("/api/keywords", {
+        headers: adminHeaders()
+      });
 
     const data =
       await response.json();
@@ -761,10 +921,7 @@ async function addKeyword() {
         "/api/keywords",
         {
           method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
+          headers: adminHeaders(true),
           body: JSON.stringify({
             keyword: keyword.trim()
           })
@@ -833,10 +990,7 @@ async function editKeyword(id) {
         `/api/keywords/${id}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
+          headers: adminHeaders(true),
           body: JSON.stringify({
             keyword: keyword.trim()
           })
@@ -888,7 +1042,8 @@ async function deleteKeyword(id) {
       await fetch(
         `/api/keywords/${id}`,
         {
-          method: "DELETE"
+          method: "DELETE",
+          headers: adminHeaders()
         }
       );
 
@@ -929,7 +1084,9 @@ async function loadAccounts() {
   try {
 
     const response =
-      await fetch("/api/accounts");
+      await fetch("/api/accounts", {
+        headers: adminHeaders()
+      });
 
     const data =
       await response.json();
@@ -1066,10 +1223,7 @@ async function addAccount() {
         "/api/accounts",
         {
           method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
+          headers: adminHeaders(true),
           body: JSON.stringify({
             username:
               username.trim(),
@@ -1118,7 +1272,9 @@ async function editAccount(id) {
   try {
 
     const response =
-      await fetch("/api/accounts");
+      await fetch("/api/accounts", {
+        headers: adminHeaders()
+      });
 
     const data =
       await response.json();
@@ -1176,10 +1332,7 @@ async function editAccount(id) {
         `/api/accounts/${id}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
+          headers: adminHeaders(true),
           body: JSON.stringify({
 
             username:
@@ -1242,7 +1395,8 @@ async function deleteAccount(id) {
       await fetch(
         `/api/accounts/${id}`,
         {
-          method: "DELETE"
+          method: "DELETE",
+          headers: adminHeaders()
         }
       );
 
