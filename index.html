@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>プレゼント情報</title>
+  <title>プレゼント情報一覧</title>
 
   <style>
     * {
@@ -13,1631 +13,1277 @@
 
     body {
       margin: 0;
-      padding: 24px 16px;
-      background: #f3f5f7;
-      color: #333;
       font-family:
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
-        "Noto Sans JP",
         sans-serif;
+      background: #f5f5f5;
+      color: #333;
     }
 
     .container {
       max-width: 760px;
       margin: 0 auto;
+      padding: 20px 15px 40px;
     }
 
-    /* =========================
-       投稿
-    ========================= */
+    h1 {
+      margin: 0 0 20px;
+      text-align: center;
+      font-size: 26px;
+    }
+
+    /* ==========================================
+       投稿一覧
+       ========================================== */
+
+    #posts {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
     .post {
       background: #fff;
-      border-radius: 12px;
-      padding: 22px;
-      margin-bottom: 18px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     }
 
     .post-text {
+      line-height: 1.7;
+      white-space: pre-wrap;
       word-break: break-word;
-      font-size: 15px;
-      line-height: 1.35;
     }
 
-    .post-link {
-      display: block;
-      color: #1677c8;
+    .post-text a {
+      color: #1677cc;
       text-decoration: none;
-      font-weight: 600;
-      padding: 1px 0;
     }
 
-    .post-link:hover {
+    .post-text a:hover {
       text-decoration: underline;
     }
 
-    .post-link:first-child {
-      font-size: 18px;
-      color: #222;
-      margin-bottom: 5px;
-    }
-
-    .post-link:not(:first-child) {
-      margin-top: 3px;
-    }
-
-    .space {
-      height: 5px;
-    }
-
     .keyword {
-      color: #e00000;
-      font-weight: 700;
+      color: red;
+      font-weight: bold;
     }
 
-    .x-button {
+    .post-x {
       display: inline-block;
       margin-top: 12px;
-      padding: 9px 18px;
+      padding: 6px 12px;
       background: #000;
       color: #fff;
+      border-radius: 6px;
       text-decoration: none;
-      border-radius: 22px;
-      font-size: 14px;
-      font-weight: 600;
-      transition: opacity 0.2s;
-    }
-
-    .x-button:hover {
-      opacity: 0.75;
+      font-size: 13px;
     }
 
     .message {
       text-align: center;
-      padding: 50px 10px;
+      padding: 30px 10px;
       color: #777;
     }
 
-    /* =========================
+    /* ==========================================
        管理ボタン
-    ========================= */
+       ========================================== */
 
     .admin-toggle {
       display: block;
       width: 100%;
-      margin: 28px auto 20px;
-      padding: 11px 16px;
+      margin-top: 20px;
+      padding: 12px;
       border: none;
-      border-radius: 10px;
-      background: #555;
+      border-radius: 8px;
+      background: #444;
       color: #fff;
-      font-size: 14px;
+      font-size: 15px;
       cursor: pointer;
     }
 
     .admin-toggle:hover {
-      background: #444;
+      background: #333;
     }
 
-    /* =========================
+    /* ==========================================
        管理画面
-    ========================= */
+       ========================================== */
 
     #admin {
       display: none;
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 24px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+      margin-bottom: 20px;
     }
-
-    #admin h2 {
-      margin: 0 0 18px;
-      font-size: 20px;
-    }
-
-    #admin h3 {
-      margin: 24px 0 12px;
-      font-size: 16px;
-      border-left: 4px solid #555;
-      padding-left: 9px;
-    }
-
-    /* =========================
-       管理画面 共通
-    ========================= */
 
     .admin-section {
-      margin-bottom: 25px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 15px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     }
 
-    .admin-list {
-      margin-bottom: 12px;
+    .admin-section h2 {
+      margin: 0 0 15px;
+      font-size: 19px;
     }
 
-    .admin-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .admin-item:last-child {
-      border-bottom: none;
-    }
-
-    .admin-item-name {
-      flex: 1;
-      word-break: break-word;
-      font-size: 14px;
-    }
-
-    .admin-item-buttons {
-      display: flex;
-      gap: 5px;
-      flex-shrink: 0;
-    }
-
-    .admin-btn {
+    .admin-section button {
       border: none;
-      border-radius: 7px;
-      padding: 6px 10px;
-      font-size: 12px;
+      border-radius: 6px;
+      padding: 7px 12px;
       cursor: pointer;
+      margin-right: 5px;
+      margin-bottom: 5px;
     }
 
-    .edit-btn {
+    .add-button {
+      background: #1677cc;
+      color: #fff;
+    }
+
+    .edit-button {
       background: #eee;
       color: #333;
     }
 
-    .edit-btn:hover {
-      background: #ddd;
-    }
-
-    .delete-btn {
-      background: #f2dddd;
-      color: #a00000;
-    }
-
-    .delete-btn:hover {
-      background: #e8caca;
-    }
-
-    .add-btn {
-      width: 100%;
-      border: none;
-      border-radius: 8px;
-      padding: 10px;
-      background: #555;
+    .delete-button {
+      background: #d9534f;
       color: #fff;
-      font-size: 14px;
-      cursor: pointer;
     }
 
-    .add-btn:hover {
-      background: #444;
+    .run-button {
+      width: 100%;
+      margin: 0;
+      padding: 13px !important;
+      background: #198754;
+      color: #fff;
+      font-size: 15px;
     }
 
-    .admin-empty {
-      color: #888;
+    .run-button:hover {
+      background: #157347;
+    }
+
+    .run-button:disabled {
+      background: #999;
+      cursor: wait;
+    }
+
+    .run-result {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 6px;
       font-size: 13px;
-      padding: 8px 0;
+      line-height: 1.6;
+      display: none;
     }
 
-    /* アカウント */
-
+    .keyword-item,
     .account-item {
-      display: block;
-      padding: 12px 0;
+      padding: 10px 0;
       border-bottom: 1px solid #eee;
     }
 
+    .keyword-item:last-child,
     .account-item:last-child {
       border-bottom: none;
     }
 
-    .account-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+    .keyword-name {
+      font-weight: bold;
+      margin-right: 8px;
     }
 
     .account-name {
-      font-weight: 600;
-      font-size: 14px;
-      word-break: break-word;
-    }
-
-    .account-status {
-      font-size: 11px;
-      padding: 3px 7px;
-      border-radius: 10px;
-      white-space: nowrap;
-    }
-
-    .status-on {
-      background: #e2f4e5;
-      color: #227a2c;
-    }
-
-    .status-off {
-      background: #eee;
-      color: #888;
+      font-weight: bold;
+      font-size: 16px;
     }
 
     .account-url {
-      margin-top: 5px;
+      margin-top: 4px;
       font-size: 12px;
       color: #777;
       word-break: break-all;
     }
 
-    .account-buttons {
-      display: flex;
-      gap: 5px;
-      margin-top: 8px;
+    .enabled {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #198754;
+      color: #fff;
+      font-size: 11px;
     }
 
-    /* =========================
-       スマホ
-    ========================= */
-
-    @media (max-width: 600px) {
-
-      body {
-        padding: 12px 10px;
-      }
-
-      .post {
-        padding: 17px;
-        margin-bottom: 14px;
-      }
-
-      .post-text {
-        font-size: 14px;
-        line-height: 1.35;
-      }
-
-      .post-link:first-child {
-        font-size: 17px;
-      }
-
-      .x-button {
-        margin-top: 12px;
-      }
-
-      #admin {
-        padding: 16px;
-      }
-
-      .admin-item {
-        align-items: flex-start;
-      }
-
-      .admin-item-buttons {
-        flex-shrink: 0;
-      }
+    .disabled {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #999;
+      color: #fff;
+      font-size: 11px;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <!-- =========================
-         管理画面
-         開いたときだけ表示
-    ========================= -->
+  <h1>🎁 プレゼント情報一覧</h1>
 
-    <div id="admin">
 
-      <h2>⚙️ 管理</h2>
+  <!-- ==========================================
+       管理画面
+       ========================================== -->
 
-      <!-- キーワード管理 -->
+  <div id="admin">
 
-      <div class="admin-section">
+    <!-- RSS手動取得 -->
+    <div class="admin-section">
 
-        <h3>キーワード</h3>
+      <h2>🔄 RSS取得</h2>
 
-        <div id="keyword-list" class="admin-list">
-          <div class="admin-empty">
-            読み込み中……
-          </div>
+      <button
+        type="button"
+        class="run-button"
+        id="runButton"
+        onclick="runRss()"
+      >
+        🔄 今すぐ取得
+      </button>
+
+      <div
+        id="runResult"
+        class="run-result"
+      ></div>
+
+    </div>
+
+
+    <!-- キーワード管理 -->
+    <div class="admin-section">
+
+      <h2>🔑 キーワード管理</h2>
+
+      <button
+        type="button"
+        class="add-button"
+        onclick="addKeyword()"
+      >
+        ＋ キーワード追加
+      </button>
+
+      <div id="keywords">
+        <div class="message">
+          読み込み中……
         </div>
-
-        <button
-          type="button"
-          class="add-btn"
-          onclick="addKeyword()"
-        >
-          ＋ キーワードを追加
-        </button>
-
-      </div>
-
-
-      <!-- アカウント管理 -->
-
-      <div class="admin-section">
-
-        <h3>アカウント</h3>
-
-        <div id="account-list" class="admin-list">
-          <div class="admin-empty">
-            読み込み中……
-          </div>
-        </div>
-
-        <button
-          type="button"
-          class="add-btn"
-          onclick="addAccount()"
-        >
-          ＋ アカウントを追加
-        </button>
-
       </div>
 
     </div>
 
 
-    <!-- =========================
-         投稿一覧
-    ========================= -->
+    <!-- アカウント管理 -->
+    <div class="admin-section">
 
-    <div id="posts">
+      <h2>👤 アカウント管理</h2>
 
-      <div class="message">
-        読み込み中……
+      <button
+        type="button"
+        class="add-button"
+        onclick="addAccount()"
+      >
+        ＋ アカウント追加
+      </button>
+
+      <div id="accounts">
+        <div class="message">
+          読み込み中……
+        </div>
       </div>
 
     </div>
-
-
-    <!-- =========================
-         管理ボタン
-         投稿一覧の一番下
-    ========================= -->
-
-    <button
-      type="button"
-      class="admin-toggle"
-      onclick="toggleAdmin()"
-    >
-      ⚙️ 管理
-    </button>
 
   </div>
 
 
-  <script>
+  <!-- ==========================================
+       投稿一覧
+       ========================================== -->
 
-    /* =====================================================
-       API
-    ===================================================== */
+  <div id="posts">
 
-    const API_POSTS = "/api/posts";
-    const API_KEYWORDS = "/api/keywords";
-    const API_ACCOUNTS = "/api/accounts";
+    <div class="message">
+      読み込み中……
+    </div>
 
-
-    /* =====================================================
-       データ
-    ===================================================== */
-
-    let KEYWORDS = [];
-    let ACCOUNTS = [];
+  </div>
 
 
-    /* =====================================================
-       投稿読み込み
-    ===================================================== */
+  <!-- ==========================================
+       管理ボタン
+       ========================================== -->
 
-    async function loadPosts() {
+  <button
+    type="button"
+    class="admin-toggle"
+    onclick="toggleAdmin()"
+  >
+    ⚙️ 管理
+  </button>
 
-      const container =
-        document.getElementById("posts");
-
-      try {
-
-        const response =
-          await fetch(API_POSTS);
-
-        if (!response.ok) {
-          throw new Error(
-            "データ取得に失敗しました"
-          );
-        }
-
-        const data =
-          await response.json();
-
-        container.innerHTML = "";
-
-        if (
-          !data.posts ||
-          data.posts.length === 0
-        ) {
-
-          container.innerHTML =
-            '<div class="message">' +
-            '現在、該当する投稿はありません。' +
-            '</div>';
-
-          return;
-        }
+</div>
 
 
-        data.posts.forEach(post => {
+<script>
 
-          const article =
-            document.createElement("article");
+/* ==========================================
+   投稿一覧
+   ========================================== */
 
-          article.className = "post";
+async function loadPosts() {
 
+  const container =
+    document.getElementById("posts");
+
+  try {
+
+    const response =
+      await fetch("/api/posts");
+
+    const data =
+      await response.json();
+
+    if (!data.success) {
+      throw new Error("投稿取得に失敗しました");
+    }
+
+    if (!data.posts || data.posts.length === 0) {
+
+      container.innerHTML =
+        '<div class="message">投稿はありません。</div>';
+
+      return;
+    }
+
+    const keywords =
+      await getKeywordList();
+
+    container.innerHTML =
+      data.posts
+        .map(post => {
 
           const text =
-            document.createElement("div");
-
-          text.className = "post-text";
-
-
-          const lines =
-            post.text.split("\n");
-
-
-          let html = "";
-          let linkCount = 0;
-
-
-          for (
-            let i = 0;
-            i < lines.length;
-            i++
-          ) {
-
-            const line =
-              lines[i].trim();
-
-
-            /* 空行 */
-
-            if (!line) {
-
-              html +=
-                '<div class="space"></div>';
-
-              continue;
-            }
-
-
-            /* 次の行がURLなら
-               今の文章をリンクにする */
-
-            const nextLine =
-              i + 1 < lines.length
-                ? lines[i + 1].trim()
-                : "";
-
-
-            if (
-              /^https?:\/\/\S+$/.test(
-                nextLine
-              )
-            ) {
-
-              const safeUrl =
-                escapeHtml(nextLine);
-
-              linkCount++;
-
-
-              const linkedText =
-                highlightKeywords(line);
-
-
-              html +=
-                `<a
-                  class="post-link link-${linkCount}"
-                  href="${safeUrl}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >${linkedText}</a>`;
-
-
-              i++;
-
-              continue;
-            }
-
-
-            /* 通常の文章 */
-
-            html +=
-              highlightKeywords(line) +
-              "<br>";
-
-          }
-
-
-          text.innerHTML = html;
-
-
-          /* Xで見るボタン */
-
-          const button =
-            document.createElement("a");
-
-          button.className =
-            "x-button";
-
-          button.href =
-            post.post_url;
-
-          button.target =
-            "_blank";
-
-          button.rel =
-            "noopener noreferrer";
-
-          button.textContent =
-            "Xで見る";
-
-
-          article.appendChild(text);
-
-          article.appendChild(button);
-
-          container.appendChild(article);
-
-        });
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        container.innerHTML =
-          '<div class="message">' +
-          '投稿の読み込みに失敗しました。' +
-          '</div>';
-
-      }
-
-    }
-
-
-    /* =====================================================
-       キーワード読み込み
-    ===================================================== */
-
-    async function loadKeywords() {
-
-      const list =
-        document.getElementById(
-          "keyword-list"
-        );
-
-
-      try {
-
-        const response =
-          await fetch(API_KEYWORDS);
-
-
-        if (!response.ok) {
-          throw new Error(
-            "キーワード取得失敗"
-          );
-        }
-
-
-        const data =
-          await response.json();
-
-
-        KEYWORDS =
-          data.keywords || [];
-
-
-        renderKeywords();
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        list.innerHTML =
-          '<div class="admin-empty">' +
-          'キーワードの読み込みに失敗しました。' +
-          '</div>';
-
-      }
-
-    }
-
-
-    /* =====================================================
-       キーワード表示
-    ===================================================== */
-
-    function renderKeywords() {
-
-      const list =
-        document.getElementById(
-          "keyword-list"
-        );
-
-
-      if (!KEYWORDS.length) {
-
-        list.innerHTML =
-          '<div class="admin-empty">' +
-          '登録されているキーワードはありません。' +
-          '</div>';
-
-        return;
-      }
-
-
-      list.innerHTML =
-        KEYWORDS.map(keyword => {
+            formatPostText(
+              post.text || "",
+              post.post_url
+            );
 
           return `
-            <div class="admin-item">
+            <div class="post">
 
-              <div class="admin-item-name">
-                ${escapeHtml(keyword.keyword)}
+              <div class="post-text">
+                ${highlightKeywords(
+                  text,
+                  keywords
+                )}
               </div>
 
-              <div class="admin-item-buttons">
-
-                <button
-                  type="button"
-                  class="admin-btn edit-btn"
-                  onclick="editKeyword(${keyword.id})"
-                >
-                  編集
-                </button>
-
-                <button
-                  type="button"
-                  class="admin-btn delete-btn"
-                  onclick="deleteKeyword(${keyword.id})"
-                >
-                  削除
-                </button>
-
-              </div>
+              <a
+                class="post-x"
+                href="${escapeHtml(post.post_url)}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Xで見る
+              </a>
 
             </div>
           `;
 
-        }).join("");
+        })
+        .join("");
 
-    }
+  } catch (error) {
 
+    console.error(error);
 
-    /* =====================================================
-       キーワード追加
-    ===================================================== */
+    container.innerHTML =
+      `<div class="message">
+        投稿の読み込みに失敗しました。
+      </div>`;
+  }
+}
 
-    async function addKeyword() {
 
-      const keyword =
-        prompt(
-          "追加するキーワードを入力してください。"
-        );
+/* ==========================================
+   投稿本文整形
+   ========================================== */
 
+function formatPostText(text, postUrl) {
 
-      if (keyword === null) {
-        return;
-      }
+  const lines =
+    text.split(/\r?\n/);
 
+  return lines
+    .map(line => {
 
-      const value =
-        keyword.trim();
-
-
-      if (!value) {
-
-        alert(
-          "キーワードを入力してください。"
-        );
-
-        return;
-      }
-
-
-      try {
-
-        const response =
-          await fetch(
-            API_KEYWORDS,
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body: JSON.stringify({
-                keyword: value
-              })
-            }
-          );
-
-
-        const result =
-          await response.json();
-
-
-        if (
-          !response.ok ||
-          !result.success
-        ) {
-
-          alert(
-            result.error ||
-            "追加に失敗しました。"
-          );
-
-          return;
-        }
-
-
-        await loadKeywords();
-
-        await loadPosts();
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert(
-          "通信エラーが発生しました。"
-        );
-
-      }
-
-    }
-
-
-    /* =====================================================
-       キーワード編集
-    ===================================================== */
-
-    async function editKeyword(id) {
-
-      const item =
-        KEYWORDS.find(
-          keyword => keyword.id === id
-        );
-
-
-      if (!item) {
-        return;
-      }
-
-
-      const keyword =
-        prompt(
-          "キーワードを変更してください。",
-          item.keyword
-        );
-
-
-      if (keyword === null) {
-        return;
-      }
-
-
-      const value =
-        keyword.trim();
-
-
-      if (!value) {
-
-        alert(
-          "キーワードを入力してください。"
-        );
-
-        return;
-      }
-
-
-      try {
-
-        const response =
-          await fetch(
-            `${API_KEYWORDS}/${id}`,
-            {
-              method: "PUT",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body: JSON.stringify({
-                keyword: value
-              })
-            }
-          );
-
-
-        const result =
-          await response.json();
-
-
-        if (
-          !response.ok ||
-          !result.success
-        ) {
-
-          alert(
-            result.error ||
-            "変更に失敗しました。"
-          );
-
-          return;
-        }
-
-
-        await loadKeywords();
-
-        await loadPosts();
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert(
-          "通信エラーが発生しました。"
-        );
-
-      }
-
-    }
-
-
-    /* =====================================================
-       キーワード削除
-    ===================================================== */
-
-    async function deleteKeyword(id) {
-
-      const item =
-        KEYWORDS.find(
-          keyword => keyword.id === id
-        );
-
-
-      if (!item) {
-        return;
-      }
-
+      const trimmed =
+        line.trim();
 
       if (
-        !confirm(
-          `「${item.keyword}」を削除しますか？`
+        trimmed.match(
+          /^https?:\/\/\S+$/i
         )
       ) {
-
-        return;
+        return escapeHtml(trimmed);
       }
 
+      return escapeHtml(line);
 
-      try {
-
-        const response =
-          await fetch(
-            `${API_KEYWORDS}/${id}`,
-            {
-              method: "DELETE"
-            }
-          );
+    })
+    .join("<br>");
+}
 
 
-        const result =
-          await response.json();
+/* ==========================================
+   キーワード取得
+   ========================================== */
 
+async function getKeywordList() {
 
-        if (
-          !response.ok ||
-          !result.success
-        ) {
+  try {
 
-          alert(
-            result.error ||
-            "削除に失敗しました。"
-          );
+    const response =
+      await fetch("/api/keywords");
 
-          return;
-        }
+    const data =
+      await response.json();
 
-
-        await loadKeywords();
-
-        await loadPosts();
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert(
-          "通信エラーが発生しました。"
-        );
-
-      }
-
+    if (!data.success) {
+      return [];
     }
 
+    return data.keywords
+      .map(item => item.keyword)
+      .filter(Boolean);
 
-    /* =====================================================
-       アカウント読み込み
-    ===================================================== */
+  } catch (error) {
 
-    async function loadAccounts() {
+    console.error(error);
 
-      const list =
-        document.getElementById(
-          "account-list"
-        );
+    return [];
+  }
+}
 
 
-      try {
+/* ==========================================
+   キーワード強調
+   ========================================== */
 
-        const response =
-          await fetch(API_ACCOUNTS);
+function highlightKeywords(text, keywords) {
 
+  let result = text;
 
-        if (!response.ok) {
-
-          throw new Error(
-            "アカウント取得失敗"
-          );
-
-        }
-
-
-        const data =
-          await response.json();
-
-
-        ACCOUNTS =
-          data.accounts || [];
-
-
-        renderAccounts();
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        list.innerHTML =
-          '<div class="admin-empty">' +
-          'アカウントの読み込みに失敗しました。' +
-          '</div>';
-
-      }
-
-    }
-
-
-    /* =====================================================
-       アカウント表示
-    ===================================================== */
-
-    function renderAccounts() {
-
-      const list =
-        document.getElementById(
-          "account-list"
-        );
-
-
-      if (!ACCOUNTS.length) {
-
-        list.innerHTML =
-          '<div class="admin-empty">' +
-          '登録されているアカウントはありません。' +
-          '</div>';
-
-        return;
-      }
-
-
-      list.innerHTML =
-        ACCOUNTS.map(account => {
-
-          const statusClass =
-            Number(account.enabled) === 1
-              ? "status-on"
-              : "status-off";
-
-
-          const statusText =
-            Number(account.enabled) === 1
-              ? "有効"
-              : "無効";
-
-
-          return `
-            <div class="account-item">
-
-              <div class="account-top">
-
-                <div class="account-name">
-                  @${escapeHtml(account.username)}
-                </div>
-
-                <div
-                  class="account-status ${statusClass}"
-                >
-                  ${statusText}
-                </div>
-
-              </div>
-
-
-              <div class="account-url">
-                X：
-                ${escapeHtml(
-                  account.x_url || ""
-                )}
-              </div>
-
-
-              <div class="account-url">
-                RSS：
-                ${escapeHtml(
-                  account.rss_url || ""
-                )}
-              </div>
-
-
-              <div class="account-buttons">
-
-                <button
-                  type="button"
-                  class="admin-btn edit-btn"
-                  onclick="editAccount(${account.id})"
-                >
-                  編集
-                </button>
-
-                <button
-                  type="button"
-                  class="admin-btn delete-btn"
-                  onclick="deleteAccount(${account.id})"
-                >
-                  削除
-                </button>
-
-              </div>
-
-            </div>
-          `;
-
-        }).join("");
-
-    }
-
-
-    /* =====================================================
-       アカウント追加
-    ===================================================== */
-
-    async function addAccount() {
-
-      const username =
-        prompt(
-          "Xのユーザー名を入力してください。\n例：knshowcom"
-        );
-
-
-      if (username === null) {
-        return;
-      }
-
-
-      const usernameValue =
-        username.trim();
-
-
-      if (!usernameValue) {
-
-        alert(
-          "ユーザー名を入力してください。"
-        );
-
-        return;
-      }
-
-
-      const xUrl =
-        prompt(
-          "XのURLを入力してください。\n例：https://x.com/knshowcom"
-        );
-
-
-      if (xUrl === null) {
-        return;
-      }
-
-
-      const xUrlValue =
-        xUrl.trim();
-
-
-      const rssUrl =
-        prompt(
-          "RSSのURLを入力してください。"
-        );
-
-
-      if (rssUrl === null) {
-        return;
-      }
-
-
-      const rssUrlValue =
-        rssUrl.trim();
-
-
-      try {
-
-        const response =
-          await fetch(
-            API_ACCOUNTS,
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body: JSON.stringify({
-
-                username:
-                  usernameValue,
-
-                x_url:
-                  xUrlValue,
-
-                rss_url:
-                  rssUrlValue,
-
-                enabled:
-                  1
-
-              })
-            }
-          );
-
-
-        const result =
-          await response.json();
-
-
-        if (
-          !response.ok ||
-          !result.success
-        ) {
-
-          alert(
-            result.error ||
-            "追加に失敗しました。"
-          );
-
-          return;
-        }
-
-
-        await loadAccounts();
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert(
-          "通信エラーが発生しました。"
-        );
-
-      }
-
-    }
-
-
-    /* =====================================================
-       アカウント編集
-    ===================================================== */
-
-    async function editAccount(id) {
-
-      const item =
-        ACCOUNTS.find(
-          account => account.id === id
-        );
-
-
-      if (!item) {
-        return;
-      }
-
-
-      const username =
-        prompt(
-          "ユーザー名",
-          item.username
-        );
-
-
-      if (username === null) {
-        return;
-      }
-
-
-      const usernameValue =
-        username.trim();
-
-
-      if (!usernameValue) {
-
-        alert(
-          "ユーザー名を入力してください。"
-        );
-
-        return;
-      }
-
-
-      const xUrl =
-        prompt(
-          "XのURL",
-          item.x_url || ""
-        );
-
-
-      if (xUrl === null) {
-        return;
-      }
-
-
-      const xUrlValue =
-        xUrl.trim();
-
-
-      const rssUrl =
-        prompt(
-          "RSSのURL",
-          item.rss_url || ""
-        );
-
-
-      if (rssUrl === null) {
-        return;
-      }
-
-
-      const rssUrlValue =
-        rssUrl.trim();
-
-
-      const enabledAnswer =
-        confirm(
-          Number(item.enabled) === 1
-            ? "このアカウントを有効にしますか？\n\n「キャンセル」で無効にします。"
-            : "このアカウントを有効にしますか？"
-        );
-
-
-      try {
-
-        const response =
-          await fetch(
-            `${API_ACCOUNTS}/${id}`,
-            {
-              method: "PUT",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body: JSON.stringify({
-
-                username:
-                  usernameValue,
-
-                x_url:
-                  xUrlValue,
-
-                rss_url:
-                  rssUrlValue,
-
-                enabled:
-                  enabledAnswer ? 1 : 0
-
-              })
-            }
-          );
-
-
-        const result =
-          await response.json();
-
-
-        if (
-          !response.ok ||
-          !result.success
-        ) {
-
-          alert(
-            result.error ||
-            "変更に失敗しました。"
-          );
-
-          return;
-        }
-
-
-        await loadAccounts();
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert(
-          "通信エラーが発生しました。"
-        );
-
-      }
-
-    }
-
-
-    /* =====================================================
-       アカウント削除
-    ===================================================== */
-
-    async function deleteAccount(id) {
-
-      const item =
-        ACCOUNTS.find(
-          account => account.id === id
-        );
-
-
-      if (!item) {
-        return;
-      }
-
-
-      if (
-        !confirm(
-          `@${item.username} を削除しますか？`
-        )
-      ) {
-
-        return;
-      }
-
-
-      try {
-
-        const response =
-          await fetch(
-            `${API_ACCOUNTS}/${id}`,
-            {
-              method: "DELETE"
-            }
-          );
-
-
-        const result =
-          await response.json();
-
-
-        if (
-          !response.ok ||
-          !result.success
-        ) {
-
-          alert(
-            result.error ||
-            "削除に失敗しました。"
-          );
-
-          return;
-        }
-
-
-        await loadAccounts();
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert(
-          "通信エラーが発生しました。"
-        );
-
-      }
-
-    }
-
-
-    /* =====================================================
-       管理画面開閉
-    ===================================================== */
-
-    function toggleAdmin() {
-
-      const admin =
-        document.getElementById("admin");
-
-
-      const button =
-        document.querySelector(
-          ".admin-toggle"
-        );
-
-
-      if (
-        admin.style.display === "block"
-      ) {
-
-        admin.style.display = "none";
-
-        button.textContent =
-          "⚙️ 管理";
-
-      } else {
-
-        admin.style.display = "block";
-
-        button.textContent =
-          "⚙️ 管理を閉じる";
-
-        loadKeywords();
-
-        loadAccounts();
-
-      }
-
-    }
-
-
-    /* =====================================================
-       キーワードを赤文字にする
-    ===================================================== */
-
-    function highlightKeywords(text) {
-
-      let escaped =
-        escapeHtml(text);
-
-
-      KEYWORDS.forEach(item => {
-
-        const keyword =
-          item.keyword;
-
-
-        const escapedKeyword =
-          escapeHtml(keyword);
-
-
-        if (!escapedKeyword) {
-          return;
-        }
-
-
-        const regex =
-          new RegExp(
-            escapeRegExp(
-              escapedKeyword
-            ),
-            "gi"
-          );
-
-
-        escaped =
-          escaped.replace(
-            regex,
-            match =>
-              `<span class="keyword">${match}</span>`
-          );
-
-      });
-
-
-      return escaped;
-
-    }
-
-
-    /* =====================================================
-       正規表現用エスケープ
-    ===================================================== */
-
-    function escapeRegExp(text) {
-
-      return text.replace(
-        /[.*+?^${}()|[\]\\]/g,
-        "\\$&"
+  const sortedKeywords =
+    [...keywords]
+      .sort((a, b) =>
+        b.length - a.length
       );
 
+  for (const keyword of sortedKeywords) {
+
+    if (!keyword) continue;
+
+    const regex =
+      new RegExp(
+        escapeRegExp(keyword),
+        "gi"
+      );
+
+    result =
+      result.replace(
+        regex,
+        match =>
+          `<span class="keyword">${match}</span>`
+      );
+  }
+
+  return result;
+}
+
+
+/* ==========================================
+   HTMLエスケープ
+   ========================================== */
+
+function escapeHtml(value) {
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+/* ==========================================
+   正規表現エスケープ
+   ========================================== */
+
+function escapeRegExp(value) {
+
+  return String(value)
+    .replace(
+      /[.*+?^${}()|[\]\\]/g,
+      "\\$&"
+    );
+}
+
+
+/* ==========================================
+   管理画面開閉
+   ========================================== */
+
+function toggleAdmin() {
+
+  const admin =
+    document.getElementById("admin");
+
+  const button =
+    document.querySelector(".admin-toggle");
+
+  if (
+    admin.style.display === "block"
+  ) {
+
+    admin.style.display = "none";
+
+    button.textContent =
+      "⚙️ 管理";
+
+  } else {
+
+    admin.style.display = "block";
+
+    button.textContent =
+      "⚙️ 管理を閉じる";
+
+    loadKeywords();
+    loadAccounts();
+  }
+}
+
+
+/* ==========================================
+   🔄 RSS手動取得
+   ========================================== */
+
+async function runRss() {
+
+  const button =
+    document.getElementById("runButton");
+
+  const resultBox =
+    document.getElementById("runResult");
+
+  button.disabled = true;
+
+  button.textContent =
+    "⏳ 取得中……";
+
+  resultBox.style.display =
+    "block";
+
+  resultBox.textContent =
+    "RSSを取得しています……";
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/run",
+        {
+          method: "POST"
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!data.success) {
+
+      throw new Error(
+        data.error ||
+        "RSS取得に失敗しました"
+      );
     }
 
+    resultBox.innerHTML = `
+      <strong>取得完了！</strong><br>
+      アカウント：${data.accounts}件<br>
+      RSS取得：${data.feeds}件<br>
+      RSS記事：${data.rssItems}件<br>
+      新規保存：${data.saved}件
+    `;
 
-    /* =====================================================
-       HTMLエスケープ
-    ===================================================== */
+    // 投稿一覧を更新
+    await loadPosts();
 
-    function escapeHtml(text) {
+  } catch (error) {
 
-      return String(text)
-        .replace(
-          /&/g,
-          "&amp;"
-        )
-        .replace(
-          /</g,
-          "&lt;"
-        )
-        .replace(
-          />/g,
-          "&gt;"
-        )
-        .replace(
-          /"/g,
-          "&quot;"
-        )
-        .replace(
-          /'/g,
-          "&#039;"
-        );
+    console.error(error);
 
+    resultBox.innerHTML = `
+      <strong>取得に失敗しました。</strong><br>
+      ${escapeHtml(error.message)}
+    `;
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "🔄 今すぐ取得";
+  }
+}
+
+
+/* ==========================================
+   キーワード一覧
+   ========================================== */
+
+async function loadKeywords() {
+
+  const container =
+    document.getElementById("keywords");
+
+  try {
+
+    const response =
+      await fetch("/api/keywords");
+
+    const data =
+      await response.json();
+
+    if (!data.success) {
+      throw new Error();
     }
 
+    renderKeywords(data.keywords);
 
-    /* =====================================================
-       初期読み込み
-    ===================================================== */
+  } catch (error) {
 
-    async function init() {
+    console.error(error);
 
-      await loadKeywords();
+    container.innerHTML =
+      '<div class="message">読み込みに失敗しました。</div>';
+  }
+}
 
-      await loadPosts();
 
+/* ==========================================
+   キーワード表示
+   ========================================== */
+
+function renderKeywords(keywords) {
+
+  const container =
+    document.getElementById("keywords");
+
+  if (
+    !keywords ||
+    keywords.length === 0
+  ) {
+
+    container.innerHTML =
+      '<div class="message">キーワードはありません。</div>';
+
+    return;
+  }
+
+  container.innerHTML =
+    keywords
+      .map(item => `
+        <div class="keyword-item">
+
+          <span class="keyword-name">
+            ${escapeHtml(item.keyword)}
+          </span>
+
+          <button
+            type="button"
+            class="edit-button"
+            onclick="editKeyword(${item.id})"
+          >
+            編集
+          </button>
+
+          <button
+            type="button"
+            class="delete-button"
+            onclick="deleteKeyword(${item.id})"
+          >
+            削除
+          </button>
+
+        </div>
+      `)
+      .join("");
+}
+
+
+/* ==========================================
+   キーワード追加
+   ========================================== */
+
+async function addKeyword() {
+
+  const keyword =
+    prompt("追加するキーワードを入力してください");
+
+  if (!keyword) {
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/keywords",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            keyword: keyword.trim()
+          })
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!data.success) {
+
+      alert(
+        data.error ||
+        "追加に失敗しました"
+      );
+
+      return;
     }
 
+    await loadKeywords();
 
-    init();
+  } catch (error) {
 
-  </script>
+    console.error(error);
+
+    alert("追加に失敗しました");
+  }
+}
+
+
+/* ==========================================
+   キーワード編集
+   ========================================== */
+
+async function editKeyword(id) {
+
+  const currentKeywords =
+    await fetch("/api/keywords")
+      .then(response =>
+        response.json()
+      );
+
+  const item =
+    currentKeywords.keywords
+      .find(k => k.id === id);
+
+  if (!item) {
+    alert("キーワードが見つかりません");
+    return;
+  }
+
+  const keyword =
+    prompt(
+      "新しいキーワードを入力してください",
+      item.keyword
+    );
+
+  if (!keyword) {
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        `/api/keywords/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            keyword: keyword.trim()
+          })
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!data.success) {
+
+      alert(
+        data.error ||
+        "変更に失敗しました"
+      );
+
+      return;
+    }
+
+    await loadKeywords();
+    await loadPosts();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("変更に失敗しました");
+  }
+}
+
+
+/* ==========================================
+   キーワード削除
+   ========================================== */
+
+async function deleteKeyword(id) {
+
+  if (
+    !confirm(
+      "このキーワードを削除しますか？"
+    )
+  ) {
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        `/api/keywords/${id}`,
+        {
+          method: "DELETE"
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!data.success) {
+
+      alert(
+        data.error ||
+        "削除に失敗しました"
+      );
+
+      return;
+    }
+
+    await loadKeywords();
+    await loadPosts();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("削除に失敗しました");
+  }
+}
+
+
+/* ==========================================
+   アカウント一覧
+   ========================================== */
+
+async function loadAccounts() {
+
+  const container =
+    document.getElementById("accounts");
+
+  try {
+
+    const response =
+      await fetch("/api/accounts");
+
+    const data =
+      await response.json();
+
+    if (!data.success) {
+      throw new Error();
+    }
+
+    renderAccounts(data.accounts);
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML =
+      '<div class="message">読み込みに失敗しました。</div>';
+  }
+}
+
+
+/* ==========================================
+   アカウント表示
+   ========================================== */
+
+function renderAccounts(accounts) {
+
+  const container =
+    document.getElementById("accounts");
+
+  if (
+    !accounts ||
+    accounts.length === 0
+  ) {
+
+    container.innerHTML =
+      '<div class="message">アカウントはありません。</div>';
+
+    return;
+  }
+
+  container.innerHTML =
+    accounts
+      .map(account => {
+
+        const status =
+          account.enabled
+            ? '<span class="enabled">有効</span>'
+            : '<span class="disabled">無効</span>';
+
+        return `
+          <div class="account-item">
+
+            <div class="account-name">
+              ${escapeHtml(account.username)}
+              ${status}
+            </div>
+
+            <div class="account-url">
+              X：
+              ${escapeHtml(account.x_url || "")}
+            </div>
+
+            <div class="account-url">
+              RSS：
+              ${escapeHtml(account.rss_url || "")}
+            </div>
+
+            <div style="margin-top:8px;">
+
+              <button
+                type="button"
+                class="edit-button"
+                onclick="editAccount(${account.id})"
+              >
+                編集
+              </button>
+
+              <button
+                type="button"
+                class="delete-button"
+                onclick="deleteAccount(${account.id})"
+              >
+                削除
+              </button>
+
+            </div>
+
+          </div>
+        `;
+
+      })
+      .join("");
+}
+
+
+/* ==========================================
+   アカウント追加
+   ========================================== */
+
+async function addAccount() {
+
+  const username =
+    prompt(
+      "ユーザー名を入力してください"
+    );
+
+  if (!username) {
+    return;
+  }
+
+  const xUrl =
+    prompt(
+      "X URLを入力してください",
+      `https://x.com/${username.trim()}`
+    );
+
+  if (xUrl === null) {
+    return;
+  }
+
+  const rssUrl =
+    prompt(
+      "RSS URLを入力してください"
+    );
+
+  if (rssUrl === null) {
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/accounts",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            username:
+              username.trim(),
+
+            x_url:
+              xUrl.trim(),
+
+            rss_url:
+              rssUrl.trim(),
+
+            enabled: 1
+          })
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!data.success) {
+
+      alert(
+        data.error ||
+        "追加に失敗しました"
+      );
+
+      return;
+    }
+
+    await loadAccounts();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("追加に失敗しました");
+  }
+}
+
+
+/* ==========================================
+   アカウント編集
+   ========================================== */
+
+async function editAccount(id) {
+
+  try {
+
+    const response =
+      await fetch("/api/accounts");
+
+    const data =
+      await response.json();
+
+    const account =
+      data.accounts
+        .find(a => a.id === id);
+
+    if (!account) {
+
+      alert(
+        "アカウントが見つかりません"
+      );
+
+      return;
+    }
+
+    const username =
+      prompt(
+        "ユーザー名",
+        account.username
+      );
+
+    if (username === null) {
+      return;
+    }
+
+    const xUrl =
+      prompt(
+        "X URL",
+        account.x_url || ""
+      );
+
+    if (xUrl === null) {
+      return;
+    }
+
+    const rssUrl =
+      prompt(
+        "RSS URL",
+        account.rss_url || ""
+      );
+
+    if (rssUrl === null) {
+      return;
+    }
+
+    const enabled =
+      confirm(
+        "このアカウントを有効にしますか？\n\nOK：有効\nキャンセル：無効"
+      );
+
+    const updateResponse =
+      await fetch(
+        `/api/accounts/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+
+            username:
+              username.trim(),
+
+            x_url:
+              xUrl.trim(),
+
+            rss_url:
+              rssUrl.trim(),
+
+            enabled:
+              enabled ? 1 : 0
+
+          })
+        }
+      );
+
+    const result =
+      await updateResponse.json();
+
+    if (!result.success) {
+
+      alert(
+        result.error ||
+        "変更に失敗しました"
+      );
+
+      return;
+    }
+
+    await loadAccounts();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("変更に失敗しました");
+  }
+}
+
+
+/* ==========================================
+   アカウント削除
+   ========================================== */
+
+async function deleteAccount(id) {
+
+  if (
+    !confirm(
+      "このアカウントを削除しますか？"
+    )
+  ) {
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        `/api/accounts/${id}`,
+        {
+          method: "DELETE"
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!data.success) {
+
+      alert(
+        data.error ||
+        "削除に失敗しました"
+      );
+
+      return;
+    }
+
+    await loadAccounts();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("削除に失敗しました");
+  }
+}
+
+
+/* ==========================================
+   初期読み込み
+   ========================================== */
+
+async function init() {
+
+  await loadKeywords();
+
+  await loadPosts();
+}
+
+init();
+
+</script>
 
 </body>
 </html>
