@@ -131,36 +131,10 @@ function jsonResponse(data, status = 200) {
         "Access-Control-Allow-Methods":
           "GET, POST, PUT, DELETE, OPTIONS",
         "Access-Control-Allow-Headers":
-          "Content-Type, X-Admin-Password"
+          "Content-Type"
       }
     }
   );
-}
-
-
-// 管理者認証
-function isAdmin(request, env) {
-  const password =
-    request.headers.get("X-Admin-Password");
-
-  return (
-    !!password &&
-    !!env.ADMIN_PASSWORD &&
-    password === env.ADMIN_PASSWORD
-  );
-}
-
-
-// 管理者認証エラー
-function requireAdmin(request, env) {
-  if (!isAdmin(request, env)) {
-    return jsonResponse({
-      success: false,
-      error: "管理者認証が必要です"
-    }, 401);
-  }
-
-  return null;
 }
 
 
@@ -171,6 +145,25 @@ async function getJson(request) {
   } catch {
     return null;
   }
+}
+
+
+// 管理者認証
+function requireAdmin(request, env) {
+  const password =
+    request.headers.get("X-Admin-Password");
+
+  if (
+    !password ||
+    password !== env.ADMIN_PASSWORD
+  ) {
+    return jsonResponse({
+      success: false,
+      error: "Unauthorized"
+    }, 401);
+  }
+
+  return null;
 }
 
 
@@ -206,9 +199,7 @@ export default {
         const authError =
           requireAdmin(request, env);
 
-        if (authError) {
-          return authError;
-        }
+        if (authError) return authError;
 
         const result = await run(env);
 
@@ -241,20 +232,33 @@ export default {
 
 
       // ==========================================
+      // 管理者認証確認
+      // ==========================================
+
+      if (
+        pathname === "/api/admin-check" &&
+        request.method === "GET"
+      ) {
+        const authError =
+          requireAdmin(request, env);
+
+        if (authError) return authError;
+
+        return jsonResponse({
+          success: true
+        });
+      }
+
+
+      // ==========================================
       // キーワード一覧
+      // ※ GETだけ公開
       // ==========================================
 
       if (
         pathname === "/api/keywords" &&
         request.method === "GET"
       ) {
-        const authError =
-          requireAdmin(request, env);
-
-        if (authError) {
-          return authError;
-        }
-
         const { results } = await env.DB
           .prepare(`
             SELECT rowid AS id, keyword
@@ -281,9 +285,7 @@ export default {
         const authError =
           requireAdmin(request, env);
 
-        if (authError) {
-          return authError;
-        }
+        if (authError) return authError;
 
         const data = await getJson(request);
 
@@ -331,9 +333,7 @@ export default {
         const authError =
           requireAdmin(request, env);
 
-        if (authError) {
-          return authError;
-        }
+        if (authError) return authError;
 
         const id = Number(keywordMatch[1]);
         const data = await getJson(request);
@@ -382,9 +382,7 @@ export default {
         const authError =
           requireAdmin(request, env);
 
-        if (authError) {
-          return authError;
-        }
+        if (authError) return authError;
 
         const id = Number(keywordMatch[1]);
 
@@ -421,9 +419,7 @@ export default {
         const authError =
           requireAdmin(request, env);
 
-        if (authError) {
-          return authError;
-        }
+        if (authError) return authError;
 
         const { results } = await env.DB
           .prepare(`
@@ -456,9 +452,7 @@ export default {
         const authError =
           requireAdmin(request, env);
 
-        if (authError) {
-          return authError;
-        }
+        if (authError) return authError;
 
         const data = await getJson(request);
 
@@ -527,9 +521,7 @@ export default {
         const authError =
           requireAdmin(request, env);
 
-        if (authError) {
-          return authError;
-        }
+        if (authError) return authError;
 
         const id = Number(accountMatch[1]);
         const data = await getJson(request);
@@ -607,9 +599,7 @@ export default {
         const authError =
           requireAdmin(request, env);
 
-        if (authError) {
-          return authError;
-        }
+        if (authError) return authError;
 
         const id = Number(accountMatch[1]);
 
@@ -663,4 +653,5 @@ export default {
   async scheduled(controller, env, ctx) {
     ctx.waitUntil(run(env));
   }
+
 };
