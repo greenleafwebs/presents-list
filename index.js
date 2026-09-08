@@ -170,6 +170,20 @@ export default {
 
 
       // ==========================================
+      // RSS手動取得
+      // ==========================================
+
+      if (
+        pathname === "/api/run" &&
+        request.method === "POST"
+      ) {
+        const result = await run(env);
+
+        return jsonResponse(result);
+      }
+
+
+      // ==========================================
       // 投稿一覧
       // ==========================================
 
@@ -304,6 +318,7 @@ export default {
           keyword
         });
       }
+
 
       if (
         keywordMatch &&
