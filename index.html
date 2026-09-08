@@ -29,6 +29,10 @@
       margin: 0 auto;
     }
 
+    /* =========================
+       投稿
+    ========================= */
+
     .post {
       background: #fff;
       border-radius: 12px;
@@ -43,7 +47,6 @@
       line-height: 1.35;
     }
 
-    /* 各リンク */
     .post-link {
       display: block;
       color: #1677c8;
@@ -56,24 +59,20 @@
       text-decoration: underline;
     }
 
-    /* 最初のリンク＝懸賞情報のタイトル */
     .post-link:first-child {
       font-size: 18px;
       color: #222;
       margin-bottom: 5px;
     }
 
-    /* プレゼント項目 */
     .post-link:not(:first-child) {
       margin-top: 3px;
     }
 
-    /* 空行の間隔 */
     .space {
       height: 5px;
     }
 
-    /* キーワード */
     .keyword {
       color: #e00000;
       font-weight: 700;
@@ -102,6 +101,194 @@
       color: #777;
     }
 
+    /* =========================
+       管理ボタン
+    ========================= */
+
+    .admin-toggle {
+      display: block;
+      width: 100%;
+      margin: 0 auto 20px;
+      padding: 11px 16px;
+      border: none;
+      border-radius: 10px;
+      background: #555;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .admin-toggle:hover {
+      opacity: 0.85;
+    }
+
+    /* =========================
+       管理画面
+    ========================= */
+
+    #admin {
+      display: none;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+    }
+
+    #admin h2 {
+      margin: 0 0 20px;
+      font-size: 20px;
+    }
+
+    .admin-section {
+      border-top: 1px solid #ddd;
+      padding-top: 18px;
+      margin-top: 20px;
+    }
+
+    .admin-section:first-of-type {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .admin-section h3 {
+      margin: 0 0 14px;
+      font-size: 17px;
+    }
+
+    .form-row {
+      margin-bottom: 10px;
+    }
+
+    .form-row label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .form-row input {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-size: 14px;
+    }
+
+    .form-row input:focus {
+      outline: none;
+      border-color: #1677c8;
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    button {
+      border: none;
+      border-radius: 7px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .btn-primary {
+      background: #1677c8;
+      color: #fff;
+    }
+
+    .btn-edit {
+      background: #777;
+      color: #fff;
+    }
+
+    .btn-delete {
+      background: #d33;
+      color: #fff;
+    }
+
+    .btn-cancel {
+      background: #ddd;
+      color: #333;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    /* =========================
+       管理リスト
+    ========================= */
+
+    .manage-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .manage-item:last-child {
+      border-bottom: none;
+    }
+
+    .manage-name {
+      flex: 1;
+      word-break: break-word;
+      font-size: 14px;
+    }
+
+    .manage-actions {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .account-disabled {
+      opacity: 0.5;
+    }
+
+    .status {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #e7f5e7;
+      color: #278327;
+      font-size: 11px;
+    }
+
+    .status.off {
+      background: #eee;
+      color: #777;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .checkbox-row input {
+      width: auto;
+    }
+
+    .small-note {
+      color: #777;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    /* =========================
+       スマホ
+    ========================= */
+
     @media (max-width: 600px) {
       body {
         padding: 12px 10px;
@@ -121,8 +308,17 @@
         font-size: 17px;
       }
 
-      .x-button {
-        margin-top: 12px;
+      .manage-item {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .manage-actions {
+        width: 100%;
+      }
+
+      .manage-actions button {
+        flex: 1;
       }
     }
   </style>
@@ -130,24 +326,156 @@
 
 <body>
 
-  <div class="container" id="posts">
-    <div class="message">読み込み中……</div>
+  <div class="container">
+
+    <!-- 管理ボタン -->
+    <button class="admin-toggle" onclick="toggleAdmin()">
+      ⚙️ 管理
+    </button>
+
+    <!-- =========================
+         管理画面
+    ========================= -->
+
+    <div id="admin">
+
+      <h2>⚙️ 管理</h2>
+
+      <!-- キーワード管理 -->
+      <div class="admin-section">
+
+        <h3>🔑 キーワード</h3>
+
+        <div id="keywordList">
+          読み込み中……
+        </div>
+
+        <div class="form-row">
+          <label for="keywordInput">キーワード追加</label>
+          <input
+            type="text"
+            id="keywordInput"
+            placeholder="例：Nintendo"
+          >
+        </div>
+
+        <div class="form-buttons">
+          <button class="btn-primary" onclick="addKeyword()">
+            追加
+          </button>
+        </div>
+
+      </div>
+
+      <!-- アカウント管理 -->
+      <div class="admin-section">
+
+        <h3>👤 アカウント</h3>
+
+        <div id="accountList">
+          読み込み中……
+        </div>
+
+        <div class="form-row">
+          <label for="usernameInput">アカウント名</label>
+          <input
+            type="text"
+            id="usernameInput"
+            placeholder="例：knshowcom"
+          >
+        </div>
+
+        <div class="form-row">
+          <label for="xUrlInput">X URL</label>
+          <input
+            type="url"
+            id="xUrlInput"
+            placeholder="https://x.com/knshowcom"
+          >
+        </div>
+
+        <div class="form-row">
+          <label for="rssUrlInput">RSS URL</label>
+          <input
+            type="url"
+            id="rssUrlInput"
+            placeholder="https://keep.md/api/x-rss/..."
+          >
+        </div>
+
+        <div class="checkbox-row">
+          <input
+            type="checkbox"
+            id="enabledInput"
+            checked
+          >
+          <label for="enabledInput">このアカウントを有効にする</label>
+        </div>
+
+        <div class="form-buttons">
+          <button class="btn-primary" onclick="addAccount()">
+            追加
+          </button>
+        </div>
+
+        <div class="small-note">
+          ※ 無効にしたアカウントはRSS取得の対象外になります。
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- =========================
+         投稿一覧
+    ========================= -->
+
+    <div id="posts">
+      <div class="message">読み込み中……</div>
+    </div>
+
   </div>
 
   <script>
+
     const API_URL = "/api/posts";
 
-    // D1に登録しているキーワード
-    const KEYWORDS = [
-      "switch",
-      "パソコン",
-      "ローソン"
-    ];
+    let KEYWORDS = [];
+
+    /* ========================================
+       管理画面 開閉
+    ======================================== */
+
+    function toggleAdmin() {
+
+      const admin = document.getElementById("admin");
+
+      if (admin.style.display === "block") {
+
+        admin.style.display = "none";
+
+      } else {
+
+        admin.style.display = "block";
+
+        loadKeywords();
+        loadAccounts();
+
+      }
+
+    }
+
+
+    /* ========================================
+       投稿読み込み
+    ======================================== */
 
     async function loadPosts() {
+
       const container = document.getElementById("posts");
 
       try {
+
         const response = await fetch(API_URL);
 
         if (!response.ok) {
@@ -159,118 +487,861 @@
         container.innerHTML = "";
 
         if (!data.posts || data.posts.length === 0) {
+
           container.innerHTML =
             '<div class="message">現在、該当する投稿はありません。</div>';
+
           return;
         }
 
         data.posts.forEach(post => {
+
           const article = document.createElement("article");
+
           article.className = "post";
 
           const text = document.createElement("div");
+
           text.className = "post-text";
 
           const lines = post.text.split("\n");
 
           let html = "";
+
           let linkCount = 0;
 
           for (let i = 0; i < lines.length; i++) {
+
             const line = lines[i].trim();
 
-            // 空行
             if (!line) {
+
               html += '<div class="space"></div>';
+
               continue;
             }
 
-            // 次の行がURLなら、
-            // 今の文章をそのURLへのリンクにする
-            const nextLine = i + 1 < lines.length
-              ? lines[i + 1].trim()
-              : "";
+            const nextLine =
+              i + 1 < lines.length
+                ? lines[i + 1].trim()
+                : "";
 
             if (/^https?:\/\/\S+$/.test(nextLine)) {
+
               const safeUrl = escapeHtml(nextLine);
 
               linkCount++;
 
-              // キーワードを赤文字にする
-              const linkedText = highlightKeywords(line);
+              const linkedText =
+                highlightKeywords(line);
 
               html +=
                 `<a class="post-link link-${linkCount}" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${linkedText}</a>`;
 
               i++;
+
               continue;
             }
 
-            // 通常の文章
-            html += highlightKeywords(line) + "<br>";
+            html +=
+              highlightKeywords(line) + "<br>";
+
           }
 
           text.innerHTML = html;
 
-          // Xで見るボタン
           const button = document.createElement("a");
+
           button.className = "x-button";
+
           button.href = post.post_url;
+
           button.target = "_blank";
+
           button.rel = "noopener noreferrer";
+
           button.textContent = "Xで見る";
 
           article.appendChild(text);
+
           article.appendChild(button);
 
           container.appendChild(article);
+
         });
 
       } catch (error) {
+
         console.error(error);
 
         container.innerHTML =
           '<div class="message">投稿の読み込みに失敗しました。</div>';
+
       }
+
     }
 
-    // キーワードを赤文字にする
+
+    /* ========================================
+       キーワード取得
+    ======================================== */
+
+    async function loadKeywords() {
+
+      const list =
+        document.getElementById("keywordList");
+
+      try {
+
+        const response =
+          await fetch("/api/keywords");
+
+        if (!response.ok) {
+          throw new Error();
+        }
+
+        const data =
+          await response.json();
+
+        KEYWORDS =
+          data.keywords.map(item => item.keyword);
+
+        list.innerHTML = "";
+
+        if (data.keywords.length === 0) {
+
+          list.innerHTML =
+            '<div class="small-note">キーワードは登録されていません。</div>';
+
+        } else {
+
+          data.keywords.forEach(item => {
+
+            const row =
+              document.createElement("div");
+
+            row.className = "manage-item";
+
+            const name =
+              document.createElement("div");
+
+            name.className = "manage-name";
+
+            name.textContent = item.keyword;
+
+            const actions =
+              document.createElement("div");
+
+            actions.className =
+              "manage-actions";
+
+            const editButton =
+              document.createElement("button");
+
+            editButton.className =
+              "btn-edit";
+
+            editButton.textContent =
+              "編集";
+
+            editButton.onclick =
+              () => editKeyword(item.id, item.keyword);
+
+            const deleteButton =
+              document.createElement("button");
+
+            deleteButton.className =
+              "btn-delete";
+
+            deleteButton.textContent =
+              "削除";
+
+            deleteButton.onclick =
+              () => deleteKeyword(item.id, item.keyword);
+
+            actions.appendChild(editButton);
+
+            actions.appendChild(deleteButton);
+
+            row.appendChild(name);
+
+            row.appendChild(actions);
+
+            list.appendChild(row);
+
+          });
+
+        }
+
+        // キーワード変更後に投稿表示も更新
+        loadPosts();
+
+      } catch (error) {
+
+        console.error(error);
+
+        list.innerHTML =
+          '<div class="small-note">キーワードの取得に失敗しました。</div>';
+
+      }
+
+    }
+
+
+    /* ========================================
+       キーワード追加
+    ======================================== */
+
+    async function addKeyword() {
+
+      const input =
+        document.getElementById("keywordInput");
+
+      const keyword =
+        input.value.trim();
+
+      if (!keyword) {
+
+        alert("キーワードを入力してください。");
+
+        return;
+
+      }
+
+      try {
+
+        const response =
+          await fetch("/api/keywords", {
+
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              keyword: keyword
+            })
+
+          });
+
+        const data =
+          await response.json();
+
+        if (!response.ok || !data.success) {
+
+          alert(
+            data.error ||
+            "キーワードの追加に失敗しました。"
+          );
+
+          return;
+
+        }
+
+        input.value = "";
+
+        await loadKeywords();
+
+        alert("キーワードを追加しました。");
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert("通信エラーが発生しました。");
+
+      }
+
+    }
+
+
+    /* ========================================
+       キーワード編集
+    ======================================== */
+
+    async function editKeyword(id, oldKeyword) {
+
+      const newKeyword =
+        prompt(
+          "新しいキーワードを入力してください。",
+          oldKeyword
+        );
+
+      if (newKeyword === null) {
+        return;
+      }
+
+      const keyword =
+        newKeyword.trim();
+
+      if (!keyword) {
+
+        alert("キーワードを空にはできません。");
+
+        return;
+
+      }
+
+      try {
+
+        const response =
+          await fetch(`/api/keywords/${id}`, {
+
+            method: "PUT",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              keyword: keyword
+            })
+
+          });
+
+        const data =
+          await response.json();
+
+        if (!response.ok || !data.success) {
+
+          alert(
+            data.error ||
+            "キーワードの変更に失敗しました。"
+          );
+
+          return;
+
+        }
+
+        await loadKeywords();
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert("通信エラーが発生しました。");
+
+      }
+
+    }
+
+
+    /* ========================================
+       キーワード削除
+    ======================================== */
+
+    async function deleteKeyword(id, keyword) {
+
+      if (
+        !confirm(
+          `「${keyword}」を削除しますか？`
+        )
+      ) {
+        return;
+      }
+
+      try {
+
+        const response =
+          await fetch(`/api/keywords/${id}`, {
+
+            method: "DELETE"
+
+          });
+
+        const data =
+          await response.json();
+
+        if (!response.ok || !data.success) {
+
+          alert(
+            data.error ||
+            "キーワードの削除に失敗しました。"
+          );
+
+          return;
+
+        }
+
+        await loadKeywords();
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert("通信エラーが発生しました。");
+
+      }
+
+    }
+
+
+    /* ========================================
+       アカウント取得
+    ======================================== */
+
+    async function loadAccounts() {
+
+      const list =
+        document.getElementById("accountList");
+
+      try {
+
+        const response =
+          await fetch("/api/accounts");
+
+        if (!response.ok) {
+          throw new Error();
+        }
+
+        const data =
+          await response.json();
+
+        list.innerHTML = "";
+
+        if (!data.accounts || data.accounts.length === 0) {
+
+          list.innerHTML =
+            '<div class="small-note">アカウントは登録されていません。</div>';
+
+          return;
+        }
+
+        data.accounts.forEach(account => {
+
+          const row =
+            document.createElement("div");
+
+          row.className = "manage-item";
+
+          if (!account.enabled) {
+            row.classList.add("account-disabled");
+          }
+
+          const name =
+            document.createElement("div");
+
+          name.className = "manage-name";
+
+          name.innerHTML =
+            `<strong>${escapeHtml(account.username)}</strong>`;
+
+          const status =
+            document.createElement("span");
+
+          status.className =
+            account.enabled
+              ? "status"
+              : "status off";
+
+          status.textContent =
+            account.enabled
+              ? "有効"
+              : "無効";
+
+          name.appendChild(status);
+
+          const actions =
+            document.createElement("div");
+
+          actions.className =
+            "manage-actions";
+
+          const editButton =
+            document.createElement("button");
+
+          editButton.className =
+            "btn-edit";
+
+          editButton.textContent =
+            "編集";
+
+          editButton.onclick =
+            () => editAccount(account);
+
+          const deleteButton =
+            document.createElement("button");
+
+          deleteButton.className =
+            "btn-delete";
+
+          deleteButton.textContent =
+            "削除";
+
+          deleteButton.onclick =
+            () =>
+              deleteAccount(
+                account.id,
+                account.username
+              );
+
+          actions.appendChild(editButton);
+
+          actions.appendChild(deleteButton);
+
+          row.appendChild(name);
+
+          row.appendChild(actions);
+
+          list.appendChild(row);
+
+        });
+
+      } catch (error) {
+
+        console.error(error);
+
+        list.innerHTML =
+          '<div class="small-note">アカウントの取得に失敗しました。</div>';
+
+      }
+
+    }
+
+
+    /* ========================================
+       アカウント追加
+    ======================================== */
+
+    async function addAccount() {
+
+      const username =
+        document.getElementById("usernameInput")
+          .value.trim();
+
+      const xUrl =
+        document.getElementById("xUrlInput")
+          .value.trim();
+
+      const rssUrl =
+        document.getElementById("rssUrlInput")
+          .value.trim();
+
+      const enabled =
+        document.getElementById("enabledInput")
+          .checked;
+
+      if (!username) {
+
+        alert("アカウント名を入力してください。");
+
+        return;
+
+      }
+
+      try {
+
+        const response =
+          await fetch("/api/accounts", {
+
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+              username: username,
+
+              x_url: xUrl,
+
+              rss_url: rssUrl,
+
+              enabled: enabled ? 1 : 0
+
+            })
+
+          });
+
+        const data =
+          await response.json();
+
+        if (!response.ok || !data.success) {
+
+          alert(
+            data.error ||
+            "アカウントの追加に失敗しました。"
+          );
+
+          return;
+
+        }
+
+        clearAccountForm();
+
+        await loadAccounts();
+
+        alert("アカウントを追加しました。");
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert("通信エラーが発生しました。");
+
+      }
+
+    }
+
+
+    /* ========================================
+       アカウント編集
+    ======================================== */
+
+    async function editAccount(account) {
+
+      const username =
+        prompt(
+          "アカウント名",
+          account.username
+        );
+
+      if (username === null) {
+        return;
+      }
+
+      const xUrl =
+        prompt(
+          "X URL",
+          account.x_url || ""
+        );
+
+      if (xUrl === null) {
+        return;
+      }
+
+      const rssUrl =
+        prompt(
+          "RSS URL",
+          account.rss_url || ""
+        );
+
+      if (rssUrl === null) {
+        return;
+      }
+
+      const enabled =
+        confirm(
+          "このアカウントを有効にしますか？\n\nOK = 有効\nキャンセル = 無効"
+        );
+
+      try {
+
+        const response =
+          await fetch(
+            `/api/accounts/${account.id}`,
+            {
+
+              method: "PUT",
+
+              headers: {
+                "Content-Type": "application/json"
+              },
+
+              body: JSON.stringify({
+
+                username:
+                  username.trim(),
+
+                x_url:
+                  xUrl.trim(),
+
+                rss_url:
+                  rssUrl.trim(),
+
+                enabled:
+                  enabled ? 1 : 0
+
+              })
+
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (!response.ok || !data.success) {
+
+          alert(
+            data.error ||
+            "アカウントの変更に失敗しました。"
+          );
+
+          return;
+
+        }
+
+        await loadAccounts();
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert("通信エラーが発生しました。");
+
+      }
+
+    }
+
+
+    /* ========================================
+       アカウント削除
+    ======================================== */
+
+    async function deleteAccount(id, username) {
+
+      if (
+        !confirm(
+          `「${username}」を削除しますか？`
+        )
+      ) {
+        return;
+      }
+
+      try {
+
+        const response =
+          await fetch(
+            `/api/accounts/${id}`,
+            {
+              method: "DELETE"
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (!response.ok || !data.success) {
+
+          alert(
+            data.error ||
+            "アカウントの削除に失敗しました。"
+          );
+
+          return;
+
+        }
+
+        await loadAccounts();
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert("通信エラーが発生しました。");
+
+      }
+
+    }
+
+
+    /* ========================================
+       アカウント入力欄クリア
+    ======================================== */
+
+    function clearAccountForm() {
+
+      document.getElementById("usernameInput")
+        .value = "";
+
+      document.getElementById("xUrlInput")
+        .value = "";
+
+      document.getElementById("rssUrlInput")
+        .value = "";
+
+      document.getElementById("enabledInput")
+        .checked = true;
+
+    }
+
+
+    /* ========================================
+       正規表現用エスケープ
+    ======================================== */
+
+    function escapeRegExp(text) {
+
+      return text.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
+      );
+
+    }
+
+
+    /* ========================================
+       キーワードを赤文字にする
+    ======================================== */
+
     function highlightKeywords(text) {
-      let escaped = escapeHtml(text);
+
+      let escaped =
+        escapeHtml(text);
 
       KEYWORDS.forEach(keyword => {
-        const escapedKeyword = escapeHtml(keyword);
 
-        const regex = new RegExp(
-          escapeRegExp(escapedKeyword),
-          "gi"
-        );
+        if (!keyword) {
+          return;
+        }
 
-        escaped = escaped.replace(
-          regex,
-          match => `<span class="keyword">${match}</span>`
-        );
+        const escapedKeyword =
+          escapeRegExp(
+            escapeHtml(keyword)
+          );
+
+        const regex =
+          new RegExp(
+            escapedKeyword,
+            "gi"
+          );
+
+        escaped =
+          escaped.replace(
+            regex,
+            match =>
+              `<span class="keyword">${match}</span>`
+          );
+
       });
 
       return escaped;
+
     }
 
-    // 正規表現用のエスケープ
-    function escapeRegExp(text) {
-      return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    }
 
-    // HTMLとして安全に表示するための処理
+    /* ========================================
+       HTMLエスケープ
+    ======================================== */
+
     function escapeHtml(text) {
-      return text
+
+      return String(text)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+
     }
 
-    loadPosts();
+
+    /* ========================================
+       初期読み込み
+    ======================================== */
+
+    async function init() {
+
+      await loadKeywords();
+
+      await loadPosts();
+
+    }
+
+    init();
+
   </script>
 
 </body>
