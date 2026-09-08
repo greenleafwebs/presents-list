@@ -236,65 +236,6 @@
       color: #fff;
       font-size: 11px;
     }
-
-    /* ==========================================
-       管理者ログイン
-       ========================================== */
-
-    .admin-login {
-      display: none;
-      margin-bottom: 15px;
-      background: #fff;
-      border-radius: 10px;
-      padding: 16px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-    }
-
-    .admin-login h2 {
-      margin: 0 0 12px;
-      font-size: 19px;
-    }
-
-    .admin-login input {
-      width: 100%;
-      padding: 11px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
-      margin-bottom: 8px;
-    }
-
-    .login-button {
-      width: 100%;
-      padding: 11px;
-      border: none;
-      border-radius: 6px;
-      background: #444;
-      color: #fff;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    .login-button:hover {
-      background: #333;
-    }
-
-    .login-error {
-      margin-top: 10px;
-      color: #d9534f;
-      font-size: 13px;
-      display: none;
-    }
-
-    .logout-button {
-      background: #777;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 7px 12px;
-      cursor: pointer;
-      margin-bottom: 15px;
-    }
   </style>
 </head>
 
@@ -304,47 +245,9 @@
 
   <h1>🎁 プレゼント情報一覧</h1>
 
-  <!-- 管理者ログイン -->
-
-  <div id="adminLogin" class="admin-login">
-
-    <h2>🔐 管理者ログイン</h2>
-
-    <input
-      type="password"
-      id="adminPassword"
-      placeholder="管理用パスワード"
-      autocomplete="current-password"
-      onkeydown="if(event.key === 'Enter') loginAdmin()"
-    >
-
-    <button
-      type="button"
-      class="login-button"
-      onclick="loginAdmin()"
-    >
-      ログイン
-    </button>
-
-    <div
-      id="loginError"
-      class="login-error"
-    ></div>
-
-  </div>
-
-
   <!-- 管理画面 -->
 
   <div id="admin">
-
-    <button
-      type="button"
-      class="logout-button"
-      onclick="logoutAdmin()"
-    >
-      🔒 ログアウト
-    </button>
 
 
     <!-- RSS手動取得 -->
@@ -904,247 +807,33 @@ function escapeRegExp(value) {
 
 
 /* ==========================================
-   管理者認証
+   管理画面表示
    ========================================== */
-
-function getAdminPassword() {
-
-  return (
-    sessionStorage.getItem(
-      "adminPassword"
-    ) || ""
-  );
-}
-
-
-function adminHeaders(json = false) {
-
-  const headers = {
-    "X-Admin-Password":
-      getAdminPassword()
-  };
-
-  if (json) {
-
-    headers["Content-Type"] =
-      "application/json";
-
-  }
-
-  return headers;
-}
-
-
-async function checkAdmin() {
-
-  const password =
-    getAdminPassword();
-
-  if (!password) {
-    return false;
-  }
-
-  try {
-
-    const response =
-      await fetch(
-        "/api/admin-check",
-        {
-          headers: {
-            "X-Admin-Password":
-              password
-          }
-        }
-      );
-
-    return response.ok;
-
-  } catch (error) {
-
-    console.error(error);
-
-    return false;
-  }
-}
-
-
-async function loginAdmin() {
-
-  const input =
-    document.getElementById(
-      "adminPassword"
-    );
-
-  const errorBox =
-    document.getElementById(
-      "loginError"
-    );
-
-
-  /*
-   * パスワードは trim() しない。
-   *
-   * パスワードにスペースが含まれていても
-   * 入力した内容をそのまま送る。
-   */
-
-  const password =
-    input.value;
-
-
-  if (!password) {
-
-    errorBox.textContent =
-      "パスワードを入力してください。";
-
-    errorBox.style.display =
-      "block";
-
-    return;
-  }
-
-
-  errorBox.style.display =
-    "none";
-
-
-  sessionStorage.setItem(
-    "adminPassword",
-    password
-  );
-
-
-  const ok =
-    await checkAdmin();
-
-
-  if (!ok) {
-
-    sessionStorage.removeItem(
-      "adminPassword"
-    );
-
-    errorBox.textContent =
-      "パスワードが違います。";
-
-    errorBox.style.display =
-      "block";
-
-    input.value = "";
-
-    input.focus();
-
-    return;
-  }
-
-
-  input.value = "";
-
-  await showAdmin();
-}
-
-
-function logoutAdmin() {
-
-  sessionStorage.removeItem(
-    "adminPassword"
-  );
-
-  document.getElementById(
-    "admin"
-  ).style.display =
-    "none";
-
-  document.getElementById(
-    "adminLogin"
-  ).style.display =
-    "none";
-
-  document.querySelector(
-    ".admin-toggle"
-  ).textContent =
-    "⚙️ 管理";
-}
-
 
 async function showAdmin() {
 
-  document.getElementById(
-    "adminLogin"
-  ).style.display =
-    "none";
+  const admin =
+    document.getElementById("admin");
 
-  document.getElementById(
-    "admin"
-  ).style.display =
-    "block";
+  if (admin.style.display === "block") {
+    admin.style.display = "none";
+    document.querySelector(".admin-toggle").textContent =
+      "⚙️ 管理";
+    return;
+  }
 
-  document.querySelector(
-    ".admin-toggle"
-  ).textContent =
+  admin.style.display = "block";
+
+  document.querySelector(".admin-toggle").textContent =
     "⚙️ 管理を閉じる";
 
   await loadKeywords();
-
   await loadAccounts();
 }
 
 
-async function toggleAdmin() {
-
-  const admin =
-    document.getElementById(
-      "admin"
-    );
-
-  const login =
-    document.getElementById(
-      "adminLogin"
-    );
-
-
-  if (
-    admin.style.display ===
-    "block"
-  ) {
-
-    admin.style.display =
-      "none";
-
-    document.querySelector(
-      ".admin-toggle"
-    ).textContent =
-      "⚙️ 管理";
-
-    return;
-  }
-
-
-  if (await checkAdmin()) {
-
-    await showAdmin();
-
-    return;
-  }
-
-
-  sessionStorage.removeItem(
-    "adminPassword"
-  );
-
-
-  login.style.display =
-    "block";
-
-
-  const input =
-    document.getElementById(
-      "adminPassword"
-    );
-
-  input.value = "";
-
-  input.focus();
+function toggleAdmin() {
+  showAdmin();
 }
 
 
@@ -1184,11 +873,7 @@ async function runRss() {
     const response =
       await fetch(
         "/api/run",
-        {
-          method: "POST",
-          headers:
-            adminHeaders()
-        }
+        { method: "POST" }
       );
 
 
@@ -1256,8 +941,6 @@ async function loadKeywords() {
       await fetch(
         "/api/keywords",
         {
-          headers:
-            adminHeaders()
         }
       );
 
@@ -1365,8 +1048,9 @@ async function addKeyword() {
         "/api/keywords",
         {
           method: "POST",
-          headers:
-            adminHeaders(true),
+          headers: {
+            "Content-Type": "application/json"
+          },
           body:
             JSON.stringify({
               keyword:
@@ -1457,8 +1141,9 @@ async function editKeyword(id) {
         `/api/keywords/${id}`,
         {
           method: "PUT",
-          headers:
-            adminHeaders(true),
+          headers: {
+            "Content-Type": "application/json"
+          },
           body:
             JSON.stringify({
               keyword:
@@ -1519,11 +1204,7 @@ async function deleteKeyword(id) {
     const response =
       await fetch(
         `/api/keywords/${id}`,
-        {
-          method: "DELETE",
-          headers:
-            adminHeaders()
-        }
+        { method: "POST" }
       );
 
 
@@ -1576,8 +1257,6 @@ async function loadAccounts() {
       await fetch(
         "/api/accounts",
         {
-          headers:
-            adminHeaders()
         }
       );
 
@@ -1739,8 +1418,9 @@ async function addAccount() {
         "/api/accounts",
         {
           method: "POST",
-          headers:
-            adminHeaders(true),
+          headers: {
+            "Content-Type": "application/json"
+          },
           body:
             JSON.stringify({
 
@@ -1802,8 +1482,6 @@ async function editAccount(id) {
       await fetch(
         "/api/accounts",
         {
-          headers:
-            adminHeaders()
         }
       );
 
@@ -1876,8 +1554,9 @@ async function editAccount(id) {
         `/api/accounts/${id}`,
         {
           method: "PUT",
-          headers:
-            adminHeaders(true),
+          headers: {
+            "Content-Type": "application/json"
+          },
           body:
             JSON.stringify({
 
@@ -1947,11 +1626,7 @@ async function deleteAccount(id) {
     const response =
       await fetch(
         `/api/accounts/${id}`,
-        {
-          method: "DELETE",
-          headers:
-            adminHeaders()
-        }
+        { method: "POST" }
       );
 
 
