@@ -131,10 +131,36 @@ function jsonResponse(data, status = 200) {
         "Access-Control-Allow-Methods":
           "GET, POST, PUT, DELETE, OPTIONS",
         "Access-Control-Allow-Headers":
-          "Content-Type"
+          "Content-Type, X-Admin-Password"
       }
     }
   );
+}
+
+
+// 管理者認証
+function isAdmin(request, env) {
+  const password =
+    request.headers.get("X-Admin-Password");
+
+  return (
+    !!password &&
+    !!env.ADMIN_PASSWORD &&
+    password === env.ADMIN_PASSWORD
+  );
+}
+
+
+// 管理者認証エラー
+function requireAdmin(request, env) {
+  if (!isAdmin(request, env)) {
+    return jsonResponse({
+      success: false,
+      error: "管理者認証が必要です"
+    }, 401);
+  }
+
+  return null;
 }
 
 
@@ -163,7 +189,7 @@ export default {
             "Access-Control-Allow-Methods":
               "GET, POST, PUT, DELETE, OPTIONS",
             "Access-Control-Allow-Headers":
-              "Content-Type"
+              "Content-Type, X-Admin-Password"
           }
         });
       }
@@ -177,6 +203,13 @@ export default {
         pathname === "/api/run" &&
         request.method === "POST"
       ) {
+        const authError =
+          requireAdmin(request, env);
+
+        if (authError) {
+          return authError;
+        }
+
         const result = await run(env);
 
         return jsonResponse(result);
@@ -215,6 +248,13 @@ export default {
         pathname === "/api/keywords" &&
         request.method === "GET"
       ) {
+        const authError =
+          requireAdmin(request, env);
+
+        if (authError) {
+          return authError;
+        }
+
         const { results } = await env.DB
           .prepare(`
             SELECT rowid AS id, keyword
@@ -238,6 +278,13 @@ export default {
         pathname === "/api/keywords" &&
         request.method === "POST"
       ) {
+        const authError =
+          requireAdmin(request, env);
+
+        if (authError) {
+          return authError;
+        }
+
         const data = await getJson(request);
 
         if (
@@ -276,10 +323,18 @@ export default {
       const keywordMatch =
         pathname.match(/^\/api\/keywords\/(\d+)$/);
 
+
       if (
         keywordMatch &&
         request.method === "PUT"
       ) {
+        const authError =
+          requireAdmin(request, env);
+
+        if (authError) {
+          return authError;
+        }
+
         const id = Number(keywordMatch[1]);
         const data = await getJson(request);
 
@@ -324,6 +379,13 @@ export default {
         keywordMatch &&
         request.method === "DELETE"
       ) {
+        const authError =
+          requireAdmin(request, env);
+
+        if (authError) {
+          return authError;
+        }
+
         const id = Number(keywordMatch[1]);
 
         const result = await env.DB
@@ -356,6 +418,13 @@ export default {
         pathname === "/api/accounts" &&
         request.method === "GET"
       ) {
+        const authError =
+          requireAdmin(request, env);
+
+        if (authError) {
+          return authError;
+        }
+
         const { results } = await env.DB
           .prepare(`
             SELECT
@@ -384,6 +453,13 @@ export default {
         pathname === "/api/accounts" &&
         request.method === "POST"
       ) {
+        const authError =
+          requireAdmin(request, env);
+
+        if (authError) {
+          return authError;
+        }
+
         const data = await getJson(request);
 
         if (
@@ -443,10 +519,18 @@ export default {
       const accountMatch =
         pathname.match(/^\/api\/accounts\/(\d+)$/);
 
+
       if (
         accountMatch &&
         request.method === "PUT"
       ) {
+        const authError =
+          requireAdmin(request, env);
+
+        if (authError) {
+          return authError;
+        }
+
         const id = Number(accountMatch[1]);
         const data = await getJson(request);
 
@@ -520,6 +604,13 @@ export default {
         accountMatch &&
         request.method === "DELETE"
       ) {
+        const authError =
+          requireAdmin(request, env);
+
+        if (authError) {
+          return authError;
+        }
+
         const id = Number(accountMatch[1]);
 
         const result = await env.DB
@@ -548,9 +639,11 @@ export default {
       // その他
       // ==========================================
 
-      const result = await run(env);
+      return jsonResponse({
+        success: false,
+        error: "Not Found"
+      }, 404);
 
-      return jsonResponse(result);
 
     } catch (error) {
       console.error(error);
