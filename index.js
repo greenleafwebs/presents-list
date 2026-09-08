@@ -1,4 +1,3 @@
-```js
 async function run(env) {
   // D1から有効なアカウントのRSSを取得
   const { results: accounts } = await env.DB
@@ -577,4 +576,3 @@ export default {
   }
 
 };
-```
