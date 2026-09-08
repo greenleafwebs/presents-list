@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -49,7 +48,7 @@
       background: #fff;
       border-radius: 10px;
       padding: 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
     }
 
     .post-title {
@@ -130,7 +129,7 @@
       border-radius: 10px;
       padding: 16px;
       margin-bottom: 15px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
     }
 
     .admin-section h2 {
@@ -248,7 +247,7 @@
       background: #fff;
       border-radius: 10px;
       padding: 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
     }
 
     .admin-login h2 {
@@ -297,7 +296,6 @@
       margin-bottom: 15px;
     }
   </style>
-
 </head>
 
 <body>
@@ -306,162 +304,147 @@
 
   <h1>🎁 プレゼント情報一覧</h1>
 
-  <!-- ==========================================
-       管理者ログイン
-       ========================================== -->
+  <!-- 管理者ログイン -->
 
   <div id="adminLogin" class="admin-login">
 
-```
-<h2>🔐 管理者ログイン</h2>
+    <h2>🔐 管理者ログイン</h2>
 
-<input
-  type="password"
-  id="adminPassword"
-  placeholder="管理用パスワード"
-  autocomplete="current-password"
-  onkeydown="if(event.key === 'Enter') loginAdmin()"
->
+    <input
+      type="password"
+      id="adminPassword"
+      placeholder="管理用パスワード"
+      autocomplete="current-password"
+      onkeydown="if(event.key === 'Enter') loginAdmin()"
+    >
 
-<button
-  type="button"
-  class="login-button"
-  onclick="loginAdmin()"
->
-  ログイン
-</button>
+    <button
+      type="button"
+      class="login-button"
+      onclick="loginAdmin()"
+    >
+      ログイン
+    </button>
 
-<div
-  id="loginError"
-  class="login-error"
-></div>
-```
+    <div
+      id="loginError"
+      class="login-error"
+    ></div>
 
   </div>
 
-  <!-- ==========================================
-       管理画面
-       ========================================== -->
+
+  <!-- 管理画面 -->
 
   <div id="admin">
 
-```
-<button
-  type="button"
-  class="logout-button"
-  onclick="logoutAdmin()"
->
-  🔒 ログアウト
-</button>
+    <button
+      type="button"
+      class="logout-button"
+      onclick="logoutAdmin()"
+    >
+      🔒 ログアウト
+    </button>
 
 
-<!-- RSS手動取得 -->
+    <!-- RSS手動取得 -->
 
-<div class="admin-section">
+    <div class="admin-section">
 
-  <h2>🔄 RSS取得</h2>
+      <h2>🔄 RSS取得</h2>
 
-  <button
-    type="button"
-    class="run-button"
-    id="runButton"
-    onclick="runRss()"
-  >
-    🔄 今すぐ取得
-  </button>
+      <button
+        type="button"
+        class="run-button"
+        id="runButton"
+        onclick="runRss()"
+      >
+        🔄 今すぐ取得
+      </button>
 
-  <div
-    id="runResult"
-    class="run-result"
-  ></div>
+      <div
+        id="runResult"
+        class="run-result"
+      ></div>
 
-</div>
+    </div>
 
 
-<!-- キーワード管理 -->
+    <!-- キーワード管理 -->
 
-<div class="admin-section">
+    <div class="admin-section">
 
-  <h2>🔑 キーワード管理</h2>
+      <h2>🔑 キーワード管理</h2>
 
-  <button
-    type="button"
-    class="add-button"
-    onclick="addKeyword()"
-  >
-    ＋ キーワード追加
-  </button>
+      <button
+        type="button"
+        class="add-button"
+        onclick="addKeyword()"
+      >
+        ＋ キーワード追加
+      </button>
 
-  <div id="keywords">
+      <div id="keywords">
 
-    <div class="message">
-      読み込み中……
+        <div class="message">
+          読み込み中……
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- アカウント管理 -->
+
+    <div class="admin-section">
+
+      <h2>👤 アカウント管理</h2>
+
+      <button
+        type="button"
+        class="add-button"
+        onclick="addAccount()"
+      >
+        ＋ アカウント追加
+      </button>
+
+      <div id="accounts">
+
+        <div class="message">
+          読み込み中……
+        </div>
+
+      </div>
+
     </div>
 
   </div>
 
-</div>
 
-
-<!-- アカウント管理 -->
-
-<div class="admin-section">
-
-  <h2>👤 アカウント管理</h2>
-
-  <button
-    type="button"
-    class="add-button"
-    onclick="addAccount()"
-  >
-    ＋ アカウント追加
-  </button>
-
-  <div id="accounts">
-
-    <div class="message">
-      読み込み中……
-    </div>
-
-  </div>
-
-</div>
-```
-
-  </div>
-
-  <!-- ==========================================
-       投稿一覧
-       ========================================== -->
+  <!-- 投稿一覧 -->
 
   <div id="posts">
 
-```
-<div class="message">
-  読み込み中……
-</div>
-```
+    <div class="message">
+      読み込み中……
+    </div>
 
   </div>
 
-  <!-- ==========================================
-       管理ボタン
-       ========================================== -->
 
-<button
-type="button"
-class="admin-toggle"
-onclick="toggleAdmin()"
+  <!-- 管理ボタン -->
 
->
-
-```
-⚙️ 管理
-```
-
+  <button
+    type="button"
+    class="admin-toggle"
+    onclick="toggleAdmin()"
+  >
+    ⚙️ 管理
   </button>
 
 </div>
+
 
 <script>
 
@@ -584,64 +567,91 @@ async function loadPosts() {
    投稿本文整形
    ========================================== */
 
+function cleanLine(value) {
+
+  return String(value || "")
+    /*
+     * 通常の空白
+     * 全角空白
+     * NBSP
+     * ゼロ幅スペース
+     * BOM
+     * Word Joiner
+     * などを先頭・末尾から除去
+     */
+    .replace(
+      /^[\s\u00A0\u1680\u180E\u2000-\u200B\u2028\u2029\u202F\u205F\u2060\u3000\uFEFF]+/,
+      ""
+    )
+    .replace(
+      /[\s\u00A0\u1680\u180E\u2000-\u200B\u2028\u2029\u202F\u205F\u2060\u3000\uFEFF]+$/,
+      ""
+    );
+}
+
+
 function formatPostText(text) {
 
-  let lines =
-    String(text)
+  const lines =
+    String(text || "")
       .split(/\r?\n/);
 
   let title = "";
   let titleUrl = "";
+
   const bodyLines = [];
 
 
   /*
-   * ------------------------------------------
-   * 1行目からタイトルとURLを取得
-   *
-   * 対応形式：
-   *
-   * 9/6締切 懸賞人気順254件
-   * https://kns.how/Jjs3JG
-   *
-   * または
-   *
-   * [**9/6締切 懸賞人気順254件**](https://kns.how/Jjs3JG)
-   * ------------------------------------------
+   * 1行目をタイトルとして処理
    */
 
   if (lines.length > 0) {
 
-    const firstLine =
-      lines[0].trim();
+    let firstLine =
+      cleanLine(lines.shift());
+
+
+    /*
+     * Markdown形式
+     *
+     * [**タイトル**](https://kns.how/xxxx)
+     */
 
     const markdownMatch =
       firstLine.match(
-        /^\[\s*\*{0,2}(.*?)\*{0,2}\s*\]\((https?:\/\/kns\.how\/\S+)\)$/i
+        /^\[\s*\*{0,2}(.*?)\*{0,2}\s*\]\(\s*(https?:\/\/kns\.how\/[^\s)]+)\s*\)$/i
       );
+
 
     if (markdownMatch) {
 
       title =
-        markdownMatch[1]
-          .trim()
-          .replace(/^\*+|\*+$/g, "")
-          .trim();
+        cleanLine(
+          markdownMatch[1]
+        )
+        .replace(
+          /^\*+|\*+$/g,
+          ""
+        )
+        .trim();
 
       titleUrl =
-        markdownMatch[2]
-          .trim();
-
-      lines.shift();
+        markdownMatch[2];
 
     } else {
 
+      /*
+       * 通常のタイトル
+       */
+
       title =
         firstLine
-          .replace(/^\*+|\*+$/g, "")
+          .replace(
+            /^\*+|\*+$/g,
+            ""
+          )
           .trim();
-
-      lines.shift();
 
     }
 
@@ -649,19 +659,17 @@ function formatPostText(text) {
 
 
   /*
-   * ------------------------------------------
-   * 本文からURL・不要な記号・余白を除去
-   * ------------------------------------------
+   * 本文処理
    */
 
   for (const originalLine of lines) {
 
     let line =
-      originalLine.trim();
+      cleanLine(originalLine);
 
 
     /*
-     * 空行はそのままスキップ
+     * 空行は除去
      */
 
     if (!line) {
@@ -670,16 +678,13 @@ function formatPostText(text) {
 
 
     /*
-     * 単独のバッククォート・コードフェンスを削除
-     *
-     * `
-     * ```
-     *
-     * など
+     * コードブロック記号が
+     * 投稿データに混入していても除去
      */
 
     if (
       line === "`" ||
+      line === "``" ||
       line === "```"
     ) {
       continue;
@@ -687,16 +692,14 @@ function formatPostText(text) {
 
 
     /*
-     * kns.how のURL単体行
-     *
-     * URLは画面に表示しない。
-     * タイトルURLがまだ無ければ取得する。
+     * kns.how のURL単独行
      */
 
     const urlMatch =
       line.match(
-        /^https?:\/\/kns\.how\/\S+$/i
+        /^https?:\/\/kns\.how\/[^\s]+$/i
       );
+
 
     if (urlMatch) {
 
@@ -710,44 +713,61 @@ function formatPostText(text) {
 
 
     /*
-     * 本文中に kns.how URL が含まれている場合も削除
+     * 本文中の kns.how URLを除去
      */
 
     line =
       line.replace(
-        /https?:\/\/kns\.how\/\S+/gi,
+        /https?:\/\/kns\.how\/[^\s<>"')`]+/gi,
         ""
-      ).trim();
+      );
 
 
     /*
-     * Markdownリンクが本文に残っている場合、
-     * kns.how URLだけ削除して文字だけ残す
+     * Markdownリンクを処理
      */
 
     line =
       line.replace(
-        /\[\s*\*{0,2}(.*?)\*{0,2}\s*\]\(\s*https?:\/\/kns\.how\/\S+\s*\)/gi,
+        /\[\s*\*{0,2}(.*?)\*{0,2}\s*\]\(\s*https?:\/\/kns\.how\/[^\s)]+\s*\)/gi,
         "$1"
-      ).trim();
+      );
 
 
     /*
-     * 本文の先頭・末尾に残っている
-     * バッククォートを除去
+     * 行頭・行末の空白を再度除去
      */
 
     line =
-      line.replace(
-        /^`+|`+$/g,
-        ""
-      ).trim();
+      cleanLine(line);
+
+
+    /*
+     * 行頭・行末に残ったバッククォートを除去
+     */
+
+    line =
+      line
+        .replace(
+          /^`+/,
+          ""
+        )
+        .replace(
+          /`+$/,
+          ""
+        );
+
+
+    line =
+      cleanLine(line);
 
 
     if (line) {
+
       bodyLines.push(
         escapeHtml(line)
       );
+
     }
 
   }
@@ -817,7 +837,9 @@ function highlightKeywords(text, keywords) {
 
   for (const keyword of sortedKeywords) {
 
-    if (!keyword) continue;
+    if (!keyword) {
+      continue;
+    }
 
     const regex =
       new RegExp(
@@ -958,8 +980,16 @@ async function loginAdmin() {
       "loginError"
     );
 
+
+  /*
+   * パスワードは trim() しない。
+   *
+   * パスワードにスペースが含まれていても
+   * 入力した内容をそのまま送る。
+   */
+
   const password =
-    input.value.trim();
+    input.value;
 
 
   if (!password) {
