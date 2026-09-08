@@ -1206,7 +1206,7 @@ async function deleteKeyword(id) {
     const response =
       await fetch(
         `/api/keywords/${id}`,
-        { method: "POST" }
+        { method: "DELETE" }
       );
 
 
@@ -1628,7 +1628,7 @@ async function deleteAccount(id) {
     const response =
       await fetch(
         `/api/accounts/${id}`,
-        { method: "POST" }
+        { method: "DELETE" }
       );
 
 
