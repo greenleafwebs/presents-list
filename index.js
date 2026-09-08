@@ -54,6 +54,7 @@ async function run(env) {
         const title = titleMatch
           ? titleMatch[1]
               .replace(/<!\[CDATA\[|\]\]>/g, "")
+              .replace(/\s+/g, " ")
               .trim()
           : "";
 
