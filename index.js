@@ -1,3 +1,4 @@
+```js
 async function run(env) {
   // D1から有効なアカウントのRSSを取得
   const { results: accounts } = await env.DB
@@ -148,25 +149,6 @@ async function getJson(request) {
 }
 
 
-// 管理者認証
-function requireAdmin(request, env) {
-  const password =
-    request.headers.get("X-Admin-Password");
-
-  if (
-    !password ||
-    password !== env.ADMIN_PASSWORD
-  ) {
-    return jsonResponse({
-      success: false,
-      error: "Unauthorized"
-    }, 401);
-  }
-
-  return null;
-}
-
-
 export default {
 
   async fetch(request, env) {
@@ -182,7 +164,7 @@ export default {
             "Access-Control-Allow-Methods":
               "GET, POST, PUT, DELETE, OPTIONS",
             "Access-Control-Allow-Headers":
-              "Content-Type, X-Admin-Password"
+              "Content-Type"
           }
         });
       }
@@ -196,11 +178,6 @@ export default {
         pathname === "/api/run" &&
         request.method === "POST"
       ) {
-        const authError =
-          requireAdmin(request, env);
-
-        if (authError) return authError;
-
         const result = await run(env);
 
         return jsonResponse(result);
@@ -232,27 +209,7 @@ export default {
 
 
       // ==========================================
-      // 管理者認証確認
-      // ==========================================
-
-      if (
-        pathname === "/api/admin-check" &&
-        request.method === "GET"
-      ) {
-        const authError =
-          requireAdmin(request, env);
-
-        if (authError) return authError;
-
-        return jsonResponse({
-          success: true
-        });
-      }
-
-
-      // ==========================================
       // キーワード一覧
-      // ※ GETだけ公開
       // ==========================================
 
       if (
@@ -282,11 +239,6 @@ export default {
         pathname === "/api/keywords" &&
         request.method === "POST"
       ) {
-        const authError =
-          requireAdmin(request, env);
-
-        if (authError) return authError;
-
         const data = await getJson(request);
 
         if (
@@ -330,11 +282,6 @@ export default {
         keywordMatch &&
         request.method === "PUT"
       ) {
-        const authError =
-          requireAdmin(request, env);
-
-        if (authError) return authError;
-
         const id = Number(keywordMatch[1]);
         const data = await getJson(request);
 
@@ -379,11 +326,6 @@ export default {
         keywordMatch &&
         request.method === "DELETE"
       ) {
-        const authError =
-          requireAdmin(request, env);
-
-        if (authError) return authError;
-
         const id = Number(keywordMatch[1]);
 
         const result = await env.DB
@@ -416,11 +358,6 @@ export default {
         pathname === "/api/accounts" &&
         request.method === "GET"
       ) {
-        const authError =
-          requireAdmin(request, env);
-
-        if (authError) return authError;
-
         const { results } = await env.DB
           .prepare(`
             SELECT
@@ -449,11 +386,6 @@ export default {
         pathname === "/api/accounts" &&
         request.method === "POST"
       ) {
-        const authError =
-          requireAdmin(request, env);
-
-        if (authError) return authError;
-
         const data = await getJson(request);
 
         if (
@@ -518,11 +450,6 @@ export default {
         accountMatch &&
         request.method === "PUT"
       ) {
-        const authError =
-          requireAdmin(request, env);
-
-        if (authError) return authError;
-
         const id = Number(accountMatch[1]);
         const data = await getJson(request);
 
@@ -596,11 +523,6 @@ export default {
         accountMatch &&
         request.method === "DELETE"
       ) {
-        const authError =
-          requireAdmin(request, env);
-
-        if (authError) return authError;
-
         const id = Number(accountMatch[1]);
 
         const result = await env.DB
@@ -655,3 +577,4 @@ export default {
   }
 
 };
+```
