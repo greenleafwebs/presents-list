@@ -825,6 +825,7 @@ async function showAdmin() {
     posts.style.display = "flex";
     toggle.textContent =
       "⚙️ 管理";
+    window.scrollTo({ top: 0, behavior: "smooth" });
     return;
   }
 
@@ -1570,6 +1571,8 @@ async function editAccount(id) {
 
     await loadAccounts();
 
+    await loadPosts();
+
 
   } catch (error) {
 
@@ -1622,6 +1625,7 @@ async function deleteAccount(id) {
 
 
     await loadAccounts();
+    await loadPosts();
 
 
   } catch (error) {
