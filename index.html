@@ -816,18 +816,25 @@ async function showAdmin() {
 
   const admin =
     document.getElementById("admin");
+  const posts =
+    document.getElementById("posts");
+  const toggle =
+    document.querySelector(".admin-toggle");
 
   if (admin.style.display === "block") {
     admin.style.display = "none";
-    document.querySelector(".admin-toggle").textContent =
+    posts.style.display = "flex";
+    toggle.textContent =
       "⚙️ 管理";
     return;
   }
 
   admin.style.display = "block";
-
-  document.querySelector(".admin-toggle").textContent =
+  posts.style.display = "none";
+  toggle.textContent =
     "⚙️ 管理を閉じる";
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
 
   await loadKeywords();
   await loadAccounts();
