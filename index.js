@@ -149,6 +149,44 @@ async function getJson(request) {
 }
 
 
+// 入力されたURLの種別を判定し、保存先のカラムを決める
+function classifySourceUrl(value) {
+  if (typeof value !== "string" || !value.trim()) {
+    return {
+      error: "X または RSS の URLを入力してください"
+    };
+  }
+
+  const sourceUrl = value.trim();
+  let url;
+
+  try {
+    url = new URL(sourceUrl);
+  } catch {
+    return {
+      error: "有効なURLを入力してください"
+    };
+  }
+
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    return {
+      error: "http または https のURLを入力してください"
+    };
+  }
+
+  const hostname = url.hostname.toLowerCase();
+  const isXUrl =
+    hostname === "x.com" ||
+    hostname.endsWith(".x.com") ||
+    hostname === "twitter.com" ||
+    hostname.endsWith(".twitter.com");
+
+  return isXUrl
+    ? { xUrl: sourceUrl, rssUrl: null }
+    : { xUrl: null, rssUrl: sourceUrl };
+}
+
+
 export default {
 
   async fetch(request, env) {
@@ -401,15 +439,14 @@ export default {
 
         const username = data.username.trim();
 
-        const xUrl =
-          typeof data.x_url === "string"
-            ? data.x_url.trim()
-            : null;
+        const source = classifySourceUrl(data.source_url);
 
-        const rssUrl =
-          typeof data.rss_url === "string"
-            ? data.rss_url.trim()
-            : null;
+        if (source.error) {
+          return jsonResponse({
+            success: false,
+            error: source.error
+          }, 400);
+        }
 
         const enabled =
           data.enabled === false ||
@@ -425,8 +462,8 @@ export default {
           `)
           .bind(
             username,
-            xUrl,
-            rssUrl,
+            source.xUrl,
+            source.rssUrl,
             enabled
           )
           .run();
@@ -466,15 +503,14 @@ export default {
 
         const username = data.username.trim();
 
-        const xUrl =
-          typeof data.x_url === "string"
-            ? data.x_url.trim()
-            : null;
+        const source = classifySourceUrl(data.source_url);
 
-        const rssUrl =
-          typeof data.rss_url === "string"
-            ? data.rss_url.trim()
-            : null;
+        if (source.error) {
+          return jsonResponse({
+            success: false,
+            error: source.error
+          }, 400);
+        }
 
         const enabled =
           data.enabled === false ||
@@ -494,8 +530,8 @@ export default {
           `)
           .bind(
             username,
-            xUrl,
-            rssUrl,
+            source.xUrl,
+            source.rssUrl,
             enabled,
             id
           )
