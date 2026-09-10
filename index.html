@@ -1331,19 +1331,17 @@ function renderAccounts(accounts) {
               ${status}
             </div>
 
-            <div class="account-url">
-              X：
-              ${escapeHtml(
-                account.x_url || ""
-              )}
-            </div>
+            ${account.x_url ? `
+              <div class="account-url">
+                X：${escapeHtml(account.x_url)}
+              </div>
+            ` : ""}
 
-            <div class="account-url">
-              RSS：
-              ${escapeHtml(
-                account.rss_url || ""
-              )}
-            </div>
+            ${account.rss_url ? `
+              <div class="account-url">
+                RSS：${escapeHtml(account.rss_url)}
+              </div>
+            ` : ""}
 
             <div style="margin-top:8px;">
 
@@ -1390,25 +1388,13 @@ async function addAccount() {
   }
 
 
-  const xUrl =
+  const sourceUrl =
     prompt(
-      "X URLを入力してください",
-      `https://x.com/${username.trim()}`
+      "X または RSS のURLを入力してください"
     );
 
 
-  if (xUrl === null) {
-    return;
-  }
-
-
-  const rssUrl =
-    prompt(
-      "RSS URLを入力してください"
-    );
-
-
-  if (rssUrl === null) {
+  if (sourceUrl === null) {
     return;
   }
 
@@ -1429,11 +1415,8 @@ async function addAccount() {
               username:
                 username.trim(),
 
-              x_url:
-                xUrl.trim(),
-
-              rss_url:
-                rssUrl.trim(),
+              source_url:
+                sourceUrl.trim(),
 
               enabled:
                 1
@@ -1521,26 +1504,14 @@ async function editAccount(id) {
     }
 
 
-    const xUrl =
+    const sourceUrl =
       prompt(
-        "X URL",
-        account.x_url || ""
+        "X または RSS のURL",
+        account.rss_url || account.x_url || ""
       );
 
 
-    if (xUrl === null) {
-      return;
-    }
-
-
-    const rssUrl =
-      prompt(
-        "RSS URL",
-        account.rss_url || ""
-      );
-
-
-    if (rssUrl === null) {
+    if (sourceUrl === null) {
       return;
     }
 
@@ -1565,11 +1536,8 @@ async function editAccount(id) {
               username:
                 username.trim(),
 
-              x_url:
-                xUrl.trim(),
-
-              rss_url:
-                rssUrl.trim(),
+              source_url:
+                sourceUrl.trim(),
 
               enabled:
                 enabled ? 1 : 0
