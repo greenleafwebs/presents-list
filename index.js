@@ -187,6 +187,37 @@ function classifySourceUrl(value) {
 }
 
 
+// 現在のキーワードに一致しないキャッシュ済み投稿を削除する
+async function removePostsWithoutKeywords(env) {
+  const { results: keywords } = await env.DB
+    .prepare("SELECT keyword FROM keywords")
+    .all();
+
+  const activeKeywords = keywords
+    .map(row => row.keyword.trim().toLowerCase())
+    .filter(Boolean);
+
+  if (activeKeywords.length === 0) {
+    await env.DB
+      .prepare("DELETE FROM posts")
+      .run();
+    return;
+  }
+
+  const conditions = activeKeywords
+    .map(() => "LOWER(text) LIKE ?")
+    .join(" OR ");
+
+  await env.DB
+    .prepare(`
+      DELETE FROM posts
+      WHERE NOT (${conditions})
+    `)
+    .bind(...activeKeywords.map(keyword => `%${keyword}%`))
+    .run();
+}
+
+
 export default {
 
   async fetch(request, env) {
@@ -352,6 +383,8 @@ export default {
           }, 404);
         }
 
+        await removePostsWithoutKeywords(env);
+
         return jsonResponse({
           success: true,
           id,
@@ -380,6 +413,8 @@ export default {
             error: "キーワードが見つかりません"
           }, 404);
         }
+
+        await removePostsWithoutKeywords(env);
 
         return jsonResponse({
           success: true,
@@ -544,6 +579,12 @@ export default {
           }, 404);
         }
 
+        // 変更前のアカウント由来の投稿を残さないよう、
+        // 次回RSS取得まで投稿キャッシュを空にする。
+        await env.DB
+          .prepare("DELETE FROM posts")
+          .run();
+
         return jsonResponse({
           success: true,
           id
@@ -575,6 +616,12 @@ export default {
             error: "アカウントが見つかりません"
           }, 404);
         }
+
+        // 投稿テーブルに取得元アカウントを保持していないため、
+        // 削除したアカウントの投稿を残さないようキャッシュを破棄する。
+        await env.DB
+          .prepare("DELETE FROM posts")
+          .run();
 
         return jsonResponse({
           success: true,
