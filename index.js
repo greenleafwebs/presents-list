@@ -1,3 +1,56 @@
+// 管理画面の認証
+const ADMIN_COOKIE = "presents_admin";
+const ADMIN_SESSION_MS = 12 * 60 * 60 * 1000;
+
+function base64UrlEncode(value) {
+  return btoa(value).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function base64UrlDecode(value) {
+  const padded = value.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(value.length / 4) * 4, "=");
+  return atob(padded);
+}
+
+async function signAdminSession(payload, secret) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const signature = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload));
+  return base64UrlEncode(String.fromCharCode(...new Uint8Array(signature)));
+}
+
+function getCookie(request, name) {
+  const header = request.headers.get("Cookie") || "";
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\async function run(env) {");
+  const match = header.match(new RegExp("(?:^|;\\s*)" + escaped + "=([^;]*)"));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+async function isAdminAuthenticated(request, env) {
+  const cookie = getCookie(request, ADMIN_COOKIE);
+  if (!cookie || !env.ADMIN_PASSWORD) return false;
+  const parts = cookie.split(".");
+  if (parts.length !== 2) return false;
+  try {
+    const payload = base64UrlDecode(parts[0]);
+    const data = JSON.parse(payload);
+    const timestamp = Number(data.t);
+    if (!Number.isFinite(timestamp) || Date.now() - timestamp > ADMIN_SESSION_MS || Date.now() < timestamp) return false;
+    const expected = await signAdminSession(parts[0], env.ADMIN_PASSWORD);
+    if (expected.length !== parts[1].length) return false;
+    let diff = 0;
+    for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ parts[1].charCodeAt(i);
+    return diff === 0;
+  } catch { return false; }
+}
+
+async function createAdminCookie(env) {
+  const payload = base64UrlEncode(JSON.stringify({ t: Date.now() }));
+  const signature = await signAdminSession(payload, env.ADMIN_PASSWORD);
+  return ADMIN_COOKIE + "=" + payload + "." + signature + "; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=" + (ADMIN_SESSION_MS / 1000);
+}
+
+function clearAdminCookie() {
+  return ADMIN_COOKIE + "=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0";
+}
 async function run(env) {
   // D1から有効なアカウントのRSSを取得
   const { results: accounts } = await env.DB
@@ -263,6 +316,83 @@ export default {
               "Content-Type"
           }
         });
+      }
+
+
+      // ==========================================
+      // 管理画面ログイン
+      // ==========================================
+
+      if (
+        pathname === "/api/admin/login" &&
+        request.method === "POST"
+      ) {
+        const data = await getJson(request);
+
+        if (!env.ADMIN_PASSWORD) {
+          return jsonResponse({
+            success: false,
+            error: "管理パスワードが設定されていません"
+          }, 500);
+        }
+
+        if (
+          !data ||
+          typeof data.password !== "string" ||
+          data.password !== env.ADMIN_PASSWORD
+        ) {
+          return jsonResponse({
+            success: false,
+            error: "パスワードが違います"
+          }, 401);
+        }
+
+        return new Response(
+          JSON.stringify({ success: true }),
+          {
+            status: 200,
+            headers: {
+              "Content-Type": "application/json; charset=UTF-8",
+              "Set-Cookie": await createAdminCookie(env)
+            }
+          }
+        );
+      }
+
+      if (
+        pathname === "/api/admin/logout" &&
+        request.method === "POST"
+      ) {
+        return new Response(
+          JSON.stringify({ success: true }),
+          {
+            status: 200,
+            headers: {
+              "Content-Type": "application/json; charset=UTF-8",
+              "Set-Cookie": clearAdminCookie()
+            }
+          }
+        );
+      }
+
+      const adminApi =
+        pathname === "/api/run" ||
+        pathname === "/api/accounts" ||
+        /^\/api\/accounts\/\d+$/.test(pathname) ||
+        (
+          pathname === "/api/keywords" &&
+          request.method !== "GET"
+        ) ||
+        (
+          /^\/api\/keywords\/\d+$/.test(pathname) &&
+          request.method !== "GET"
+        );
+
+      if (adminApi && !(await isAdminAuthenticated(request, env))) {
+        return jsonResponse({
+          success: false,
+          error: "管理画面へのログインが必要です"
+        }, 401);
       }
 
 
