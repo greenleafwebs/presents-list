@@ -70,6 +70,19 @@ async function run(env) {
               .trim()
           : "";
 
+        // 投稿日時
+        const pubDateMatch =
+          item.match(/<pubDate>([\s\S]*?)<\/pubDate>/i) ||
+          item.match(/<dc:date[^>]*>([\s\S]*?)<\/dc:date>/i);
+
+        const publishedAt = pubDateMatch
+          ? toSqliteDateTime(pubDateMatch[1])
+          : null;
+
+        // 投稿日時が取得できない記事は、
+        // 7日表示の対象にできないため保存しない。
+        if (!publishedAt) continue;
+
         // 検索対象
         const searchText =
           `${title} ${description}`.toLowerCase();
@@ -88,10 +101,10 @@ async function run(env) {
         const result = await env.DB
           .prepare(`
             INSERT OR IGNORE INTO posts
-              (post_url, text)
-            VALUES (?, ?)
+              (post_url, text, published_at)
+            VALUES (?, ?, ?)
           `)
-          .bind(postUrl, description)
+          .bind(postUrl, description, publishedAt)
           .run();
 
         if (result.meta.changes) {
@@ -116,6 +129,20 @@ async function run(env) {
     keywords: keywords.map(k => k.keyword),
     saved: savedCount
   };
+}
+
+
+// RSSの日時をD1/SQLiteで扱いやすいUTC日時へ変換
+function toSqliteDateTime(value) {
+  const date = new Date(String(value || "").trim());
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date.toISOString()
+    .replace("T", " ")
+    .replace(/\.\d{3}Z$/, "");
 }
 
 
@@ -265,7 +292,8 @@ export default {
           .prepare(`
             SELECT post_url, text
             FROM posts
-            ORDER BY rowid DESC
+            WHERE datetime(published_at) >= datetime('now', '-7 days')
+            ORDER BY datetime(published_at) DESC
             LIMIT 100
           `)
           .all();
