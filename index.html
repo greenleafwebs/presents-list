@@ -116,6 +116,62 @@
       background: #333;
     }
 
+    
+    /* ==========================================
+       管理ログイン
+       ========================================== */
+
+    #admin-login {
+      display: none;
+      margin-bottom: 20px;
+    }
+
+    .login-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .login-box h2 {
+      margin: 0 0 15px;
+      font-size: 20px;
+    }
+
+    .login-password {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .login-hint {
+      margin: 0 0 12px;
+      color: #777;
+      font-size: 13px;
+    }
+
+    .login-button {
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      padding: 11px;
+      background: #444;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .login-error {
+      margin-top: 10px;
+      color: #d9534f;
+      font-size: 13px;
+      display: none;
+    }
+
+
     /* ==========================================
        管理画面
        ========================================== */
@@ -247,6 +303,36 @@
 
   <h1>🎁 プレゼント情報一覧</h1>
 
+  <!-- 管理ログイン -->
+
+  <div id="admin-login">
+    <div class="login-box">
+      <h2>🔐 管理画面ログイン</h2>
+
+      <input
+        type="password"
+        id="adminPassword"
+        class="login-password"
+        placeholder="パスワード"
+        autocomplete="current-password"
+      >
+
+      <div class="login-hint">
+        ヒント：こどもたちのなまえ
+      </div>
+
+      <button
+        type="button"
+        class="login-button"
+        onclick="loginAdmin()"
+      >
+        ログイン
+      </button>
+
+      <div id="loginError" class="login-error"></div>
+    </div>
+  </div>
+
   <!-- 管理画面 -->
 
   <div id="admin">
@@ -300,6 +386,21 @@
 
 
 <!-- アカウント管理 -->
+
+<div class="admin-section">
+
+  <h2>🔒 管理セッション</h2>
+
+  <button
+    type="button"
+    class="edit-button"
+    onclick="logoutAdmin()"
+  >
+    ログアウト
+  </button>
+
+</div>
+
 
 <div class="admin-section">
 
@@ -817,32 +918,108 @@ async function showAdmin() {
     document.getElementById("admin");
   const posts =
     document.getElementById("posts");
+  const login =
+    document.getElementById("admin-login");
   const toggle =
     document.querySelector(".admin-toggle");
 
   if (admin.style.display === "block") {
     admin.style.display = "none";
     posts.style.display = "flex";
-    toggle.textContent =
-      "⚙️ 管理";
+    toggle.textContent = "⚙️ 管理";
     window.scrollTo({ top: 0, behavior: "smooth" });
     return;
   }
 
-  admin.style.display = "block";
+  // 既存のログイン状態をCookieで確認
+  try {
+    const response = await fetch("/api/accounts");
+
+    if (response.ok) {
+      login.style.display = "none";
+      admin.style.display = "block";
+      posts.style.display = "none";
+      toggle.textContent = "⚙️ 管理を閉じる";
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      await loadKeywords();
+      await loadAccounts();
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+
+  login.style.display = "block";
+  admin.style.display = "none";
   posts.style.display = "none";
-  toggle.textContent =
-    "⚙️ 管理を閉じる";
-
-  window.scrollTo({ top: 0, behavior: "smooth" });
-
-  await loadKeywords();
-  await loadAccounts();
+  toggle.textContent = "⚙️ 管理を閉じる";
+  document.getElementById("adminPassword").focus();
 }
 
 
 function toggleAdmin() {
   showAdmin();
+}
+
+
+async function loginAdmin() {
+
+  const input =
+    document.getElementById("adminPassword");
+  const errorBox =
+    document.getElementById("loginError");
+
+  const password = input.value;
+
+  if (!password) {
+    errorBox.textContent = "パスワードを入力してください。";
+    errorBox.style.display = "block";
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/admin/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ password })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data.error || "ログインに失敗しました。"
+      );
+    }
+
+    input.value = "";
+    errorBox.style.display = "none";
+
+    await showAdmin();
+
+  } catch (error) {
+    errorBox.textContent = error.message;
+    errorBox.style.display = "block";
+  }
+}
+
+
+async function logoutAdmin() {
+
+  await fetch("/api/admin/logout", {
+    method: "POST"
+  });
+
+  document.getElementById("admin").style.display = "none";
+  document.getElementById("admin-login").style.display = "none";
+  document.getElementById("posts").style.display = "flex";
+  document.querySelector(".admin-toggle").textContent = "⚙️ 管理";
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 
